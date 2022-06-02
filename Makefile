@@ -1,17 +1,30 @@
 # This file is licensed under the Affero General Public License version 3 or
-# later. See the COPYING file.
+# later. See the LICENSE file.
 
-all: dev-setup lint build-js-production test test-php
+app_name=adminly_calendar
+build_directory=$(CURDIR)/build
+temp_build_directory=$(build_directory)/temp
+build_tools_directory=$(CURDIR)/build/tools
 
+all: dev-setup lint build-js-production test
+
+release: npm-init build-js-production build-tarball
 # Dev env management
-dev-setup: clean npm-init
+dev-setup: clean clean-dev composer npm-init
+
+lint: eslint stylelint prettier php-cs
+
+lint-fix: eslint-fix stylelint-fix prettier-fix php-cs-fix
+
+# Dependencies
+composer:
+	composer install --prefer-dist
+
+composer-update:
+	composer update --prefer-dist
 
 npm-init:
 	npm ci
-
-composer-init:
-	composer install --prefer-dist
-	composer update --prefer-dist
 
 npm-update:
 	npm update
@@ -26,30 +39,15 @@ build-js-production:
 watch-js:
 	npm run watch
 
-# Testing
-test:
-	npm run test
-
-test-watch:
-	npm run test:watch
-
-test-coverage:
-	npm run test:coverage
-
-test-php:
-	phpunit -c phpunit.xml
-	phpunit -c phpunit.integration.xml
-
-test-php-coverage:
-	phpunit -c phpunit.xml --coverage-clover=coverage-unit.xml
-	phpunit -c phpunit.integration.xml --coverage-clover=coverage-integration.xml
+serve-js:
+	npm run serve
 
 # Linting
-lint:
-	npm run lint
+eslint:
+	npm run eslint
 
-lint-fix:
-	npm run lint:fix
+eslint-fix:
+	npm run eslint:fix
 
 # Style linting
 stylelint:
@@ -58,10 +56,53 @@ stylelint:
 stylelint-fix:
 	npm run stylelint:fix
 
+# Prettier
+prettier:
+	npm run prettier
+
+prettier-fix:
+	npm run prettier:fix
+
+# PHP CS Fixer
+php-cs:
+	vendor/bin/php-cs-fixer fix -v --dry-run
+
+php-cs-fix:
+	vendor/bin/php-cs-fixer fix -v
+
 # Cleaning
 clean:
-	rm -rf js
+	rm -rf js/*
 
-# Builds the source package for the app store, ignores php and js tests
-appstore:
-	krankerl package
+clean-dev:
+	rm -rf node_modules
+
+# Tests
+test:
+	npm run test
+	./vendor/phpunit/phpunit/phpunit -c phpunit.xml
+
+build-tarball:
+	rm -rf $(build_directory)
+	mkdir -p $(temp_build_directory)
+	rsync -a \
+	--exclude=".git" \
+	--exclude=".github" \
+	--exclude=".vscode" \
+	--exclude="node_modules" \
+	--exclude="build" \
+	--exclude="vendor" \
+	--exclude=".editorconfig" \
+	--exclude=".gitignore" \
+	--exclude=".php_cs.dist" \
+	--exclude=".prettierrc" \
+	--exclude=".stylelintrc.json" \
+	--exclude="composer.json" \
+	--exclude="composer.lock" \
+	--exclude="Makefile" \
+	--exclude="package-lock.json" \
+	--exclude="package.json" \
+	../$(app_name)/ $(temp_build_directory)/$(app_name)
+	tar czf $(build_directory)/$(app_name).tar.gz \
+		-C $(temp_build_directory) $(app_name)
+
