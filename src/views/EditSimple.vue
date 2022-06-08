@@ -26,7 +26,7 @@
 		:auto-hide="false"
 		:placement="placement"
 		:boundaries-element="boundaryElement"
-		open-class="event-popover"
+		open-class="adminly event-popover"
 		trigger="manual">
 		<template v-if="isLoading">
 			<PopoverLoadingIndicator />
@@ -92,28 +92,17 @@
 						{{ $t('calendar', 'Delete this and all future') }}
 					</ActionButton>
 				</Actions>
-				<Actions>
-					<ActionButton @click="cancel">
-						<template #icon>
-							<Close :size="20" decorative />
-						</template>
-						{{ $t('calendar', 'Close') }}
-					</ActionButton>
-				</Actions>
 			</div>
-
-			<IllustrationHeader :color="illustrationColor"
-				:illustration-url="backgroundImage" />
-
-			<PropertyTitle :value="title"
-				:is-read-only="isReadOnly"
-				@update:value="updateTitle" />
 
 			<PropertyCalendarPicker v-if="showCalendarPicker"
 				:calendars="calendars"
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
 				@select-calendar="changeCalendar" />
+
+			<PropertyTitle :value="title"
+				:is-read-only="isReadOnly"
+				@update:value="updateTitle" />
 
 			<PropertyTitleTimePicker :start-date="startDate"
 				:start-timezone="startTimezone"
@@ -130,28 +119,41 @@
 				@toggle-all-day="toggleAllDay" />
 
 			<PropertyText :is-read-only="isReadOnly"
-				:prop-model="rfcProps.location"
-				:value="location"
-				@update:value="updateLocation" />
-			<PropertyText :is-read-only="isReadOnly"
 				:prop-model="rfcProps.description"
 				:value="description"
 				@update:value="updateDescription" />
+
+			<Repeat :calendar-object-instance="calendarObjectInstance"
+				:recurrence-rule="calendarObjectInstance.recurrenceRule"
+				:is-read-only="isReadOnly"
+				:is-editing-master-item="isEditingMasterItem"
+				:is-recurrence-exception="isRecurrenceException"
+				@force-this-and-all-future="forceModifyingFuture" />
+
+			<AlarmList :calendar-object-instance="calendarObjectInstance"
+				:is-read-only="isReadOnly" />
 
 			<InvitationResponseButtons v-if="isViewedByAttendee && userAsAttendee && !isReadOnly"
 				:attendee="userAsAttendee"
 				:calendar-id="calendarId"
 				@close="closeEditorAndSkipAction" />
 
-			<SaveButtons v-if="!isReadOnly"
-				class="event-popover__buttons"
-				:can-create-recurrence-exception="canCreateRecurrenceException"
-				:is-new="isNew"
-				:force-this-and-all-future="forceThisAndAllFuture"
-				:show-more-button="true"
-				@save-this-only="saveAndLeave(false)"
-				@save-this-and-all-future="saveAndLeave(true)"
-				@show-more="showMore" />
+			<div class="adminly-buttons">
+				<Button @click="cancel">
+					<template #icon>
+						<Close :size="20" decorative />
+					</template>
+					{{ $t('calendar', 'Cancel') }}
+				</Button>
+
+				<SaveButtons v-if="!isReadOnly"
+					class="event-popover__buttons"
+					:can-create-recurrence-exception="canCreateRecurrenceException"
+					:is-new="isNew"
+					:force-this-and-all-future="forceThisAndAllFuture"
+					@save-this-only="saveAndLeave(false)"
+					@save-this-and-all-future="saveAndLeave(true)" />
+			</div>
 		</template>
 	</Popover>
 </template>
@@ -162,7 +164,6 @@ import ActionLink from '@nextcloud/vue/dist/Components/ActionLink'
 import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
 import Popover from '@nextcloud/vue/dist/Components/Popover'
 import EditorMixin from '../mixins/EditorMixin'
-import IllustrationHeader from '../components/Editor/IllustrationHeader.vue'
 import PropertyTitle from '../components/Editor/Properties/PropertyTitle.vue'
 import PropertyTitleTimePicker from '../components/Editor/Properties/PropertyTitleTimePicker.vue'
 import PropertyCalendarPicker from '../components/Editor/Properties/PropertyCalendarPicker.vue'
@@ -179,6 +180,9 @@ import Delete from 'vue-material-design-icons/Delete.vue'
 import Download from 'vue-material-design-icons/Download.vue'
 import { mapState } from 'vuex'
 
+import Repeat from '../components/Editor/Repeat/Repeat.vue'
+import AlarmList from '../components/Editor/Alarm/AlarmList'
+
 export default {
 	name: 'EditSimple',
 	components: {
@@ -188,7 +192,6 @@ export default {
 		PropertyCalendarPicker,
 		PropertyTitleTimePicker,
 		PropertyTitle,
-		IllustrationHeader,
 		Popover,
 		Actions,
 		ActionButton,
@@ -200,6 +203,8 @@ export default {
 		Download,
 		Delete,
 		InvitationResponseButtons,
+		Repeat,
+		AlarmList,
 	},
 	mixins: [
 		EditorMixin,
