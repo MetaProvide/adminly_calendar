@@ -307,3 +307,65 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss">
+.adminly .calendar-picker-option {
+	width: 100%;
+}
+
+.adminly.event-popover .popover__inner {
+	max-width: 350px;
+	width: 350px;
+	padding: 2.75rem 1.5rem 1.5rem;
+	border-radius: 1rem;
+
+	.property-title-time-picker__time-pickers {
+		flex-direction: column;
+	}
+
+	.property-title-time-picker__time-pickers .mx-datepicker {
+		width: 100%;
+	}
+
+	.adminly-buttons {
+		display: flex;
+		margin-top: 1rem;
+		justify-content: end;
+	}
+
+	.adminly-buttons .event-popover__buttons {
+		margin-top: 0;
+	}
+
+	> div > div:nth-child(2) .multiselect {
+		input[type="radio"] {
+			width: auto !important;
+			cursor: pointer;
+		}
+
+		.multiselect__select,
+		.multiselect__tags {
+			display: none;
+		}
+
+		.multiselect__content-wrapper {
+			display: inline-block !important;
+			border: unset !important;
+			position: unset;
+		}
+
+		.multiselect__content-wrapper .multiselect__content {
+			display: flex !important;
+			justify-content: space-around;
+		}
+
+		.multiselect__content-wrapper li > span,
+		.multiselect__content-wrapper li > span.multiselect__option--highlight,
+		.multiselect__content-wrapper li > span.multiselect__option--selected {
+			background-color: unset !important;
+			color: var(--color-main-text) !important;
+			padding: 0;
+		}
+	}
+}
+</style>
