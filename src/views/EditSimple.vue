@@ -133,11 +133,6 @@
 			<AlarmList :calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
-			<InvitationResponseButtons v-if="isViewedByAttendee && userAsAttendee && !isReadOnly"
-				:attendee="userAsAttendee"
-				:calendar-id="calendarId"
-				@close="closeEditorAndSkipAction" />
-
 			<div class="adminly-buttons">
 				<Button @click="cancel">
 					<template #icon>
@@ -171,7 +166,6 @@ import PropertyText from '../components/Editor/Properties/PropertyText.vue'
 import SaveButtons from '../components/Editor/SaveButtons.vue'
 import PopoverLoadingIndicator from '../components/Popover/PopoverLoadingIndicator.vue'
 import { getPrefixedRoute } from '../utils/router.js'
-import InvitationResponseButtons from '../components/Editor/InvitationResponseButtons'
 
 import ArrowExpand from 'vue-material-design-icons/ArrowExpand.vue'
 import CalendarBlank from 'vue-material-design-icons/CalendarBlank.vue'
@@ -202,7 +196,6 @@ export default {
 		Close,
 		Download,
 		Delete,
-		InvitationResponseButtons,
 		Repeat,
 		AlarmList,
 	},
