@@ -57,15 +57,7 @@
 
 		<template v-else>
 			<div class="event-popover__top-right-actions">
-				<Actions v-if="isReadOnly">
-					<ActionButton @click="showMore">
-						<template #icon>
-							<ArrowExpand :size="20" decorative />
-						</template>
-						{{ $t('calendar', 'Show more details') }}
-					</ActionButton>
-				</Actions>
-				<Actions v-if="!isLoading && !isError" :force-menu="true">
+				<Actions v-if="!isLoading && !isError && !isNew" :force-menu="true">
 					<ActionLink v-if="!hideEventExport && hasDownloadURL"
 						:href="downloadURL">
 						<template #icon>
