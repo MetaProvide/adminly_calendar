@@ -159,7 +159,6 @@ import SaveButtons from '../components/Editor/SaveButtons.vue'
 import PopoverLoadingIndicator from '../components/Popover/PopoverLoadingIndicator.vue'
 import { getPrefixedRoute } from '../utils/router.js'
 
-import ArrowExpand from 'vue-material-design-icons/ArrowExpand.vue'
 import CalendarBlank from 'vue-material-design-icons/CalendarBlank.vue'
 import Close from 'vue-material-design-icons/Close.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
@@ -183,7 +182,6 @@ export default {
 		ActionButton,
 		ActionLink,
 		EmptyContent,
-		ArrowExpand,
 		CalendarBlank,
 		Close,
 		Download,
