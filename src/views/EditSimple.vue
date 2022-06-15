@@ -26,7 +26,7 @@
 		:auto-hide="false"
 		:placement="placement"
 		:boundaries-element="boundaryElement"
-		open-class="event-popover"
+		open-class="adminly event-popover"
 		trigger="manual">
 		<template v-if="isLoading">
 			<PopoverLoadingIndicator />
@@ -57,15 +57,7 @@
 
 		<template v-else>
 			<div class="event-popover__top-right-actions">
-				<Actions v-if="isReadOnly">
-					<ActionButton @click="showMore">
-						<template #icon>
-							<ArrowExpand :size="20" decorative />
-						</template>
-						{{ $t('calendar', 'Show more details') }}
-					</ActionButton>
-				</Actions>
-				<Actions v-if="!isLoading && !isError" :force-menu="true">
+				<Actions v-if="!isLoading && !isError && !isNew" :force-menu="true">
 					<ActionLink v-if="!hideEventExport && hasDownloadURL"
 						:href="downloadURL">
 						<template #icon>
@@ -92,28 +84,17 @@
 						{{ $t('calendar', 'Delete this and all future') }}
 					</ActionButton>
 				</Actions>
-				<Actions>
-					<ActionButton @click="cancel">
-						<template #icon>
-							<Close :size="20" decorative />
-						</template>
-						{{ $t('calendar', 'Close') }}
-					</ActionButton>
-				</Actions>
 			</div>
-
-			<IllustrationHeader :color="illustrationColor"
-				:illustration-url="backgroundImage" />
-
-			<PropertyTitle :value="title"
-				:is-read-only="isReadOnly"
-				@update:value="updateTitle" />
 
 			<PropertyCalendarPicker v-if="showCalendarPicker"
 				:calendars="calendars"
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
 				@select-calendar="changeCalendar" />
+
+			<PropertyTitle :value="title"
+				:is-read-only="isReadOnly"
+				@update:value="updateTitle" />
 
 			<PropertyTitleTimePicker :start-date="startDate"
 				:start-timezone="startTimezone"
@@ -130,28 +111,36 @@
 				@toggle-all-day="toggleAllDay" />
 
 			<PropertyText :is-read-only="isReadOnly"
-				:prop-model="rfcProps.location"
-				:value="location"
-				@update:value="updateLocation" />
-			<PropertyText :is-read-only="isReadOnly"
 				:prop-model="rfcProps.description"
 				:value="description"
 				@update:value="updateDescription" />
 
-			<InvitationResponseButtons v-if="isViewedByAttendee && userAsAttendee && !isReadOnly"
-				:attendee="userAsAttendee"
-				:calendar-id="calendarId"
-				@close="closeEditorAndSkipAction" />
+			<Repeat :calendar-object-instance="calendarObjectInstance"
+				:recurrence-rule="calendarObjectInstance.recurrenceRule"
+				:is-read-only="isReadOnly"
+				:is-editing-master-item="isEditingMasterItem"
+				:is-recurrence-exception="isRecurrenceException"
+				@force-this-and-all-future="forceModifyingFuture" />
 
-			<SaveButtons v-if="!isReadOnly"
-				class="event-popover__buttons"
-				:can-create-recurrence-exception="canCreateRecurrenceException"
-				:is-new="isNew"
-				:force-this-and-all-future="forceThisAndAllFuture"
-				:show-more-button="true"
-				@save-this-only="saveAndLeave(false)"
-				@save-this-and-all-future="saveAndLeave(true)"
-				@show-more="showMore" />
+			<AlarmList :calendar-object-instance="calendarObjectInstance"
+				:is-read-only="isReadOnly" />
+
+			<div class="adminly-buttons">
+				<Button @click="cancel">
+					<template #icon>
+						<Close :size="20" decorative />
+					</template>
+					{{ $t('calendar', 'Cancel') }}
+				</Button>
+
+				<SaveButtons v-if="!isReadOnly"
+					class="event-popover__buttons"
+					:can-create-recurrence-exception="canCreateRecurrenceException"
+					:is-new="isNew"
+					:force-this-and-all-future="forceThisAndAllFuture"
+					@save-this-only="saveAndLeave(false)"
+					@save-this-and-all-future="saveAndLeave(true)" />
+			</div>
 		</template>
 	</Popover>
 </template>
@@ -162,7 +151,6 @@ import ActionLink from '@nextcloud/vue/dist/Components/ActionLink'
 import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
 import Popover from '@nextcloud/vue/dist/Components/Popover'
 import EditorMixin from '../mixins/EditorMixin'
-import IllustrationHeader from '../components/Editor/IllustrationHeader.vue'
 import PropertyTitle from '../components/Editor/Properties/PropertyTitle.vue'
 import PropertyTitleTimePicker from '../components/Editor/Properties/PropertyTitleTimePicker.vue'
 import PropertyCalendarPicker from '../components/Editor/Properties/PropertyCalendarPicker.vue'
@@ -170,14 +158,15 @@ import PropertyText from '../components/Editor/Properties/PropertyText.vue'
 import SaveButtons from '../components/Editor/SaveButtons.vue'
 import PopoverLoadingIndicator from '../components/Popover/PopoverLoadingIndicator.vue'
 import { getPrefixedRoute } from '../utils/router.js'
-import InvitationResponseButtons from '../components/Editor/InvitationResponseButtons'
 
-import ArrowExpand from 'vue-material-design-icons/ArrowExpand.vue'
 import CalendarBlank from 'vue-material-design-icons/CalendarBlank.vue'
 import Close from 'vue-material-design-icons/Close.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
 import Download from 'vue-material-design-icons/Download.vue'
 import { mapState } from 'vuex'
+
+import Repeat from '../components/Editor/Repeat/Repeat.vue'
+import AlarmList from '../components/Editor/Alarm/AlarmList'
 
 export default {
 	name: 'EditSimple',
@@ -188,18 +177,17 @@ export default {
 		PropertyCalendarPicker,
 		PropertyTitleTimePicker,
 		PropertyTitle,
-		IllustrationHeader,
 		Popover,
 		Actions,
 		ActionButton,
 		ActionLink,
 		EmptyContent,
-		ArrowExpand,
 		CalendarBlank,
 		Close,
 		Download,
 		Delete,
-		InvitationResponseButtons,
+		Repeat,
+		AlarmList,
 	},
 	mixins: [
 		EditorMixin,
@@ -302,3 +290,65 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss">
+.adminly .calendar-picker-option {
+	width: 100%;
+}
+
+.adminly.event-popover .popover__inner {
+	max-width: 350px;
+	width: 350px;
+	padding: 2rem 1.5rem 1.5rem;
+	border-radius: 1rem;
+
+	.property-title-time-picker__time-pickers {
+		flex-direction: column;
+	}
+
+	.property-title-time-picker__time-pickers .mx-datepicker {
+		width: 100%;
+	}
+
+	.adminly-buttons {
+		display: flex;
+		margin-top: 1rem;
+		justify-content: end;
+	}
+
+	.adminly-buttons .event-popover__buttons {
+		margin-top: 0;
+	}
+
+	> div > div:nth-child(2) .multiselect {
+		input[type="radio"] {
+			width: auto !important;
+			cursor: pointer;
+		}
+
+		.multiselect__select,
+		.multiselect__tags {
+			display: none;
+		}
+
+		.multiselect__content-wrapper {
+			display: inline-block !important;
+			border: unset !important;
+			position: unset;
+		}
+
+		.multiselect__content-wrapper .multiselect__content {
+			display: flex !important;
+			justify-content: space-around;
+		}
+
+		.multiselect__content-wrapper li > span,
+		.multiselect__content-wrapper li > span.multiselect__option--highlight,
+		.multiselect__content-wrapper li > span.multiselect__option--selected {
+			background-color: unset !important;
+			color: var(--color-main-text) !important;
+			padding: 0;
+		}
+	}
+}
+</style>

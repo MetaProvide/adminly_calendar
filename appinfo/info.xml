@@ -2,7 +2,7 @@
 <info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
 	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>calendar</id>
-	<name>Calendar</name>
+	<name>Adminly Calendar</name>
 	<summary>A Calendar app for Nextcloud</summary>
 	<description><![CDATA[The Calendar app is a user interface for Nextcloud's CalDAV server. Easily sync events from various devices with your Nextcloud and edit them online.
 
@@ -48,7 +48,7 @@
 			<id>calendar</id>
 			<name>Calendar</name>
 			<route>calendar.view.index</route>
-			<icon>calendar.svg</icon>
+			<icon>adminly_calendar.svg</icon>
 			<order>5</order>
 		</navigation>
 	</navigations>
