@@ -299,7 +299,7 @@ export default {
 .adminly.event-popover .popover__inner {
 	max-width: 350px;
 	width: 350px;
-	padding: 2.75rem 1.5rem 1.5rem;
+	padding: 2rem 1.5rem 1.5rem;
 	border-radius: 1rem;
 
 	.property-title-time-picker__time-pickers {
