@@ -126,7 +126,7 @@
 				:is-read-only="isReadOnly" />
 
 			<div class="adminly-buttons">
-				<Button @click="cancel">
+				<Button class="cancel-button" @click="cancel">
 					<template #icon>
 						<Close :size="20" decorative />
 					</template>
@@ -134,7 +134,7 @@
 				</Button>
 
 				<SaveButtons v-if="!isReadOnly"
-					class="event-popover__buttons"
+					class="event-popover__buttons save-button"
 					:can-create-recurrence-exception="canCreateRecurrenceException"
 					:is-new="isNew"
 					:force-this-and-all-future="forceThisAndAllFuture"
@@ -318,6 +318,21 @@ export default {
 
 	.adminly-buttons .event-popover__buttons {
 		margin-top: 0;
+	}
+
+	.save-button .primary{
+		background-color: var(--adminly-light-blue);
+	}
+
+	.save-button button{
+		border-radius: 8px;
+		border: none;
+	}
+
+	.cancel-button{
+		background-color: white;
+		color: var(--adminly-light-blue);
+		border: none;
 	}
 
 	> div > div:nth-child(2) .multiselect {
