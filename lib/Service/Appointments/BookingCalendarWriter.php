@@ -40,195 +40,200 @@ use RuntimeException;
 use Sabre\VObject\Component\VCalendar;
 use function abs;
 
-class BookingCalendarWriter {
+class BookingCalendarWriter
+{
+    /** @var IConfig */
+    private $config;
 
-	/** @var IConfig */
-	private $config;
+    /** @var IManager */
+    private $manager;
 
-	/** @var IManager */
-	private $manager;
+    /** @var IUserManager */
+    private $userManager;
 
-	/** @var IUserManager */
-	private $userManager;
+    /** @var ISecureRandom */
+    private $random;
+    /** @var IL10N */
+    private $l10n;
 
-	/** @var ISecureRandom */
-	private $random;
-	/** @var IL10N */
-	private $l10n;
+    public function __construct(
+        IConfig $config,
+        IManager $manager,
+        IUserManager $userManager,
+        ISecureRandom $random,
+        IL10N $l10n
+    ) {
+        $this->config = $config;
+        $this->manager = $manager;
+        $this->userManager = $userManager;
+        $this->random = $random;
+        $this->l10n = $l10n;
+    }
 
-	public function __construct(IConfig $config,
-								IManager $manager,
-								IUserManager $userManager,
-								ISecureRandom $random,
-								IL10N $l10n) {
-		$this->config = $config;
-		$this->manager = $manager;
-		$this->userManager = $userManager;
-		$this->random = $random;
-		$this->l10n = $l10n;
-	}
+    private function secondsToIso8601Duration(int $secs): string
+    {
+        $day = 24 * 60 * 60;
+        $hour = 60 * 60;
+        $minute = 60;
+        if ($secs % $day === 0) {
+            return 'PT' . $secs / $day . 'S';
+        }
+        if ($secs % $hour === 0) {
+            return 'PT' . $secs / $hour . 'H';
+        }
+        if ($secs % $minute === 0) {
+            return 'PT' . $secs / $minute . 'M';
+        }
+        return 'PT' . $secs . 'S';
+    }
 
-	private function secondsToIso8601Duration(int $secs): string {
-		$day = 24 * 60 * 60;
-		$hour = 60 * 60;
-		$minute = 60;
-		if ($secs % $day === 0) {
-			return 'PT' . $secs / $day . 'S';
-		}
-		if ($secs % $hour === 0) {
-			return 'PT' . $secs / $hour . 'H';
-		}
-		if ($secs % $minute === 0) {
-			return 'PT' . $secs / $minute . 'M';
-		}
-		return 'PT' . $secs . 'S';
-	}
+    /**
+     * @param AppointmentConfig $config
+     * @param DateTimeImmutable $start
+     * @param string $name
+     * @param string $email
+     * @param string $description
+     *
+     * @throws RuntimeException
+     *
+     */
+    public function write(AppointmentConfig $config, DateTimeImmutable $start, string $displayName, string $email, ?string $description = null): void
+    {
+        $calendar = current($this->manager->getCalendarsForPrincipal($config->getPrincipalUri(), [$config->getTargetCalendarUri()]));
+        if (!$calendar || !($calendar instanceof ICreateFromString)) {
+            throw new RuntimeException('Could not find a public writable calendar for this principal');
+        }
 
-	/**
-	 * @param AppointmentConfig $config
-	 * @param DateTimeImmutable $start
-	 * @param string $name
-	 * @param string $email
-	 * @param string $description
-	 *
-	 * @throws RuntimeException
-	 *
-	 */
-	public function write(AppointmentConfig $config, DateTimeImmutable $start, string $displayName, string $email, ?string $description = null) : void {
-		$calendar = current($this->manager->getCalendarsForPrincipal($config->getPrincipalUri(), [$config->getTargetCalendarUri()]));
-		if (!$calendar || !($calendar instanceof ICreateFromString)) {
-			throw new RuntimeException('Could not find a public writable calendar for this principal');
-		}
+        $organizer = $this->userManager->get($config->getUserId());
+        if ($organizer === null) {
+            throw new RuntimeException('Organizer not registered user for this instance');
+        }
 
-		$organizer = $this->userManager->get($config->getUserId());
-		if ($organizer === null) {
-			throw new RuntimeException('Organizer not registered user for this instance');
-		}
+        $vcalendar = new VCalendar([
+            'CALSCALE' => 'GREGORIAN',
+            'VERSION' => '2.0',
+            'VEVENT' => [
+                'SUMMARY' => $config->getName(),
+                'STATUS' => 'CONFIRMED',
+                'DTSTART' => $start,
+                'DTEND' => $start->setTimestamp($start->getTimestamp() + ($config->getLength()))
+            ]
+        ]);
 
-		$vcalendar = new VCalendar([
-			'CALSCALE' => 'GREGORIAN',
-			'VERSION' => '2.0',
-			'VEVENT' => [
-				'SUMMARY' => $config->getName(),
-				'STATUS' => 'CONFIRMED',
-				'DTSTART' => $start,
-				'DTEND' => $start->setTimestamp($start->getTimestamp() + ($config->getLength()))
-			]
-		]);
+        if (!empty($description)) {
+            $vcalendar->VEVENT->add('DESCRIPTION', $description);
+        }
 
-		if (!empty($description)) {
-			$vcalendar->VEVENT->add('DESCRIPTION', $description);
-		}
+        $vcalendar->VEVENT->add(
+            'ORGANIZER',
+            'mailto:' . $organizer->getEMailAddress(),
+            [
+                'CN' => $organizer->getDisplayName(),
+                'CUTYPE' => 'INDIVIDUAL',
+                'PARTSTAT' => 'ACCEPTED'
+            ]
+        );
 
-		$vcalendar->VEVENT->add(
-			'ORGANIZER',
-			'mailto:' . $organizer->getEMailAddress(),
-			[
-				'CN' => $organizer->getDisplayName(),
-				'CUTYPE' => 'INDIVIDUAL',
-				'PARTSTAT' => 'ACCEPTED'
-			]
-		);
+        $vcalendar->VEVENT->add(
+            'ATTENDEE',
+            'mailto:' . $organizer->getEMailAddress(),
+            [
+                'CN' => $organizer->getDisplayName(),
+                'CUTYPE' => 'INDIVIDUAL',
+                'RSVP' => 'TRUE',
+                'ROLE' => 'REQ-PARTICIPANT',
+                'PARTSTAT' => 'ACCEPTED'
+            ]
+        );
 
-		$vcalendar->VEVENT->add(
-			'ATTENDEE',
-			'mailto:' . $organizer->getEMailAddress(),
-			[
-				'CN' => $organizer->getDisplayName(),
-				'CUTYPE' => 'INDIVIDUAL',
-				'RSVP' => 'TRUE',
-				'ROLE' => 'REQ-PARTICIPANT',
-				'PARTSTAT' => 'ACCEPTED'
-			]
-		);
+        $vcalendar->VEVENT->add(
+            'ATTENDEE',
+            'mailto:' . $email,
+            [
+                'CN' => $displayName,
+                'CUTYPE' => 'INDIVIDUAL',
+                'RSVP' => 'TRUE',
+                'ROLE' => 'REQ-PARTICIPANT',
+                'PARTSTAT' => 'ACCEPTED'
+            ]
+        );
 
-		$vcalendar->VEVENT->add('ATTENDEE',
-			'mailto:' . $email,
-			[
-				'CN' => $displayName,
-				'CUTYPE' => 'INDIVIDUAL',
-				'RSVP' => 'TRUE',
-				'ROLE' => 'REQ-PARTICIPANT',
-				'PARTSTAT' => 'ACCEPTED'
-			]
-		);
+        $defaultReminder = $this->config->getUserValue(
+            $config->getUserId(),
+            Application::APP_ID,
+            'defaultReminder',
+            'none'
+        );
+        if ($defaultReminder !== 'none') {
+            $alarm = $vcalendar->createComponent('VALARM');
+            $alarm->add($vcalendar->createProperty('TRIGGER', '-' . $this->secondsToIso8601Duration(abs((int) $defaultReminder)), ['RELATED' => 'START']));
+            $alarm->add($vcalendar->createProperty('ACTION', 'DISPLAY'));
+            $vcalendar->VEVENT->add($alarm);
+        }
 
-		$defaultReminder = $this->config->getUserValue(
-			$config->getUserId(),
-			Application::APP_ID,
-			'defaultReminder',
-			'none'
-		);
-		if ($defaultReminder !== 'none') {
-			$alarm = $vcalendar->createComponent('VALARM');
-			$alarm->add($vcalendar->createProperty('TRIGGER', '-' . $this->secondsToIso8601Duration(abs((int) $defaultReminder)), ['RELATED' => 'START']));
-			$alarm->add($vcalendar->createProperty('ACTION', 'DISPLAY'));
-			$vcalendar->VEVENT->add($alarm);
-		}
+        $vcalendar->VEVENT->add('X-NC-APPOINTMENT', $config->getToken());
 
-		$vcalendar->VEVENT->add('X-NC-APPOINTMENT', $config->getToken());
+        $filename = $this->random->generate(32, ISecureRandom::CHAR_ALPHANUMERIC);
 
-		$filename = $this->random->generate(32, ISecureRandom::CHAR_ALPHANUMERIC);
+        try {
+            $calendar->createFromString($filename . '.ics', $vcalendar->serialize());
+        } catch (CalendarException $e) {
+            throw new RuntimeException('Could not write event  for appointment config id ' . $config->getId(). ' to calendar: ' . $e->getMessage(), 0, $e);
+        }
 
-		try {
-			$calendar->createFromString($filename . '.ics', $vcalendar->serialize());
-		} catch (CalendarException $e) {
-			throw new RuntimeException('Could not write event  for appointment config id ' . $config->getId(). ' to calendar: ' . $e->getMessage(), 0, $e);
-		}
+        if ($config->getPreparationDuration() !== 0) {
+            $string = $this->l10n->t('Prepare for %s', [$config->getName()]);
+            $prepStart = $start->setTimestamp($start->getTimestamp() - $config->getPreparationDuration());
+            $prepCalendar = new VCalendar([
+                'CALSCALE' => 'GREGORIAN',
+                'VERSION' => '2.0',
+                'VEVENT' => [
+                    'SUMMARY' => $string,
+                    'STATUS' => 'CONFIRMED',
+                    'DTSTART' => $prepStart,
+                    'DTEND' => $start
+                ]
+            ]);
 
-		if ($config->getPreparationDuration() !== 0) {
-			$string = $this->l10n->t('Prepare for %s', [$config->getName()]);
-			$prepStart = $start->setTimestamp($start->getTimestamp() - $config->getPreparationDuration());
-			$prepCalendar = new VCalendar([
-				'CALSCALE' => 'GREGORIAN',
-				'VERSION' => '2.0',
-				'VEVENT' => [
-					'SUMMARY' => $string,
-					'STATUS' => 'CONFIRMED',
-					'DTSTART' => $prepStart,
-					'DTEND' => $start
-				]
-			]);
+            $prepCalendar->VEVENT->add('RELATED-TO', $vcalendar->VEVENT->{'UID'});
+            $prepCalendar->VEVENT->add('RELTYPE', 'PARENT');
+            $prepCalendar->VEVENT->add('X-NC-PRE-APPOINTMENT', $config->getToken());
 
-			$prepCalendar->VEVENT->add('RELATED-TO', $vcalendar->VEVENT->{'UID'});
-			$prepCalendar->VEVENT->add('RELTYPE', 'PARENT');
-			$prepCalendar->VEVENT->add('X-NC-PRE-APPOINTMENT', $config->getToken());
+            $prepFileName = $this->random->generate(32, ISecureRandom::CHAR_ALPHANUMERIC);
 
-			$prepFileName = $this->random->generate(32, ISecureRandom::CHAR_ALPHANUMERIC);
+            try {
+                $calendar->createFromString($prepFileName . '.ics', $prepCalendar->serialize());
+            } catch (CalendarException $e) {
+                throw new RuntimeException('Could not write event  for appointment config id ' . $config->getId(). ' to calendar: ' . $e->getMessage(), 0, $e);
+            }
+        }
 
-			try {
-				$calendar->createFromString($prepFileName . '.ics', $prepCalendar->serialize());
-			} catch (CalendarException $e) {
-				throw new RuntimeException('Could not write event  for appointment config id ' . $config->getId(). ' to calendar: ' . $e->getMessage(), 0, $e);
-			}
-		}
+        if ($config->getFollowupDuration() !== 0) {
+            $string = $this->l10n->t('Follow up for %s', [$config->getName()]);
+            $followupStart = $start->setTimestamp($start->getTimestamp() + $config->getLength());
+            $followUpEnd = $followupStart->setTimestamp($followupStart->getTimestamp() + $config->getFollowupDuration());
+            $followUpCalendar = new VCalendar([
+                'CALSCALE' => 'GREGORIAN',
+                'VERSION' => '2.0',
+                'VEVENT' => [
+                    'SUMMARY' => $string,
+                    'STATUS' => 'CONFIRMED',
+                    'DTSTART' => $followupStart,
+                    'DTEND' => $followUpEnd
+                ]
+            ]);
 
-		if ($config->getFollowupDuration() !== 0) {
-			$string = $this->l10n->t('Follow up for %s', [$config->getName()]);
-			$followupStart = $start->setTimestamp($start->getTimestamp() + $config->getLength());
-			$followUpEnd = $followupStart->setTimestamp($followupStart->getTimestamp() + $config->getFollowupDuration());
-			$followUpCalendar = new VCalendar([
-				'CALSCALE' => 'GREGORIAN',
-				'VERSION' => '2.0',
-				'VEVENT' => [
-					'SUMMARY' => $string,
-					'STATUS' => 'CONFIRMED',
-					'DTSTART' => $followupStart,
-					'DTEND' => $followUpEnd
-				]
-			]);
+            $followUpCalendar->VEVENT->add('RELATED-TO', $vcalendar->VEVENT->{'UID'});
+            $followUpCalendar->VEVENT->add('RELTYPE', 'PARENT');
+            $followUpCalendar->VEVENT->add('X-NC-POST-APPOINTMENT', $config->getToken());
 
-			$followUpCalendar->VEVENT->add('RELATED-TO', $vcalendar->VEVENT->{'UID'});
-			$followUpCalendar->VEVENT->add('RELTYPE', 'PARENT');
-			$followUpCalendar->VEVENT->add('X-NC-POST-APPOINTMENT', $config->getToken());
+            $followUpFilename = $this->random->generate(32, ISecureRandom::CHAR_ALPHANUMERIC);
 
-			$followUpFilename = $this->random->generate(32, ISecureRandom::CHAR_ALPHANUMERIC);
-
-			try {
-				$calendar->createFromString($followUpFilename . '.ics', $followUpCalendar->serialize());
-			} catch (CalendarException $e) {
-				throw new RuntimeException('Could not write event  for appointment config id ' . $config->getId(). ' to calendar: ' . $e->getMessage(), 0, $e);
-			}
-		}
-	}
+            try {
+                $calendar->createFromString($followUpFilename . '.ics', $followUpCalendar->serialize());
+            } catch (CalendarException $e) {
+                throw new RuntimeException('Could not write event  for appointment config id ' . $config->getId(). ' to calendar: ' . $e->getMessage(), 0, $e);
+            }
+        }
+    }
 }

@@ -32,33 +32,36 @@ use OCP\EventDispatcher\IEventListener;
 use OCP\User\Events\UserDeletedEvent;
 use Psr\Log\LoggerInterface;
 
-class UserDeletedListener implements IEventListener {
+class UserDeletedListener implements IEventListener
+{
+    /** @var AppointmentConfigService */
+    private $appointmentConfigService;
 
-	/** @var AppointmentConfigService */
-	private $appointmentConfigService;
+    /** @var BookingService */
+    private $bookingService;
 
-	/** @var BookingService */
-	private $bookingService;
+    /** @var LoggerInterface */
+    private $logger;
 
-	/** @var LoggerInterface */
-	private $logger;
+    public function __construct(
+        AppointmentConfigService $appointmentConfigService,
+        BookingService $bookingService,
+        LoggerInterface $logger
+    ) {
+        $this->appointmentConfigService = $appointmentConfigService;
+        $this->bookingService = $bookingService;
+        $this->logger = $logger;
+    }
 
-	public function __construct(AppointmentConfigService $appointmentConfigService,
-								BookingService $bookingService,
-								LoggerInterface $logger) {
-		$this->appointmentConfigService = $appointmentConfigService;
-		$this->bookingService = $bookingService;
-		$this->logger = $logger;
-	}
+    public function handle(Event $event): void
+    {
+        if (!($event instanceof UserDeletedEvent)) {
+            return;
+        }
 
-	public function handle(Event $event): void {
-		if (!($event instanceof UserDeletedEvent)) {
-			return;
-		}
+        $this->bookingService->deleteByUser($event->getUser());
+        $this->appointmentConfigService->deleteByUser($event->getUser());
 
-		$this->bookingService->deleteByUser($event->getUser());
-		$this->appointmentConfigService->deleteByUser($event->getUser());
-
-		$this->logger->info("Calendar appointments cleaned up for deleted user " . $event->getUser()->getUID());
-	}
+        $this->logger->info("Calendar appointments cleaned up for deleted user " . $event->getUser()->getUID());
+    }
 }

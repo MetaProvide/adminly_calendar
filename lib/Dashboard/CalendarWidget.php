@@ -31,80 +31,88 @@ use OCP\Dashboard\IWidget;
 use OCP\IInitialStateService;
 use OCP\IL10N;
 
-class CalendarWidget implements IWidget {
+class CalendarWidget implements IWidget
+{
+    /**
+     * @var IL10N
+     */
+    private $l10n;
 
-	/**
-	 * @var IL10N
-	 */
-	private $l10n;
+    /**
+     * @var IInitialStateService
+     */
+    private $initialStateService;
 
-	/**
-	 * @var IInitialStateService
-	 */
-	private $initialStateService;
+    /**
+     * @var JSDataService
+     */
+    private $dataService;
 
-	/**
-	 * @var JSDataService
-	 */
-	private $dataService;
+    /**
+     * CalendarWidget constructor.
+     * @param IL10N $l10n
+     * @param IInitialStateService $initialStateService
+     * @param JSDataService $dataService
+     */
+    public function __construct(
+        IL10N $l10n,
+        IInitialStateService $initialStateService,
+        JSDataService $dataService
+    ) {
+        $this->l10n = $l10n;
+        $this->initialStateService = $initialStateService;
+        $this->dataService = $dataService;
+    }
 
-	/**
-	 * CalendarWidget constructor.
-	 * @param IL10N $l10n
-	 * @param IInitialStateService $initialStateService
-	 * @param JSDataService $dataService
-	 */
-	public function __construct(IL10N $l10n,
-								IInitialStateService $initialStateService,
-								JSDataService $dataService) {
-		$this->l10n = $l10n;
-		$this->initialStateService = $initialStateService;
-		$this->dataService = $dataService;
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getId(): string
+    {
+        return Application::APP_ID;
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getId(): string {
-		return Application::APP_ID;
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getTitle(): string
+    {
+        return $this->l10n->t('Upcoming events');
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getTitle(): string {
-		return $this->l10n->t('Upcoming events');
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getOrder(): int
+    {
+        return 2;
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getOrder(): int {
-		return 2;
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getIconClass(): string
+    {
+        return 'icon-calendar-dark';
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getIconClass(): string {
-		return 'icon-calendar-dark';
-	}
+    /**
+     * @inheritDoc
+     */
+    public function getUrl(): ?string
+    {
+        return null;
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function getUrl(): ?string {
-		return null;
-	}
+    /**
+     * @inheritDoc
+     */
+    public function load(): void
+    {
+        \OCP\Util::addScript('calendar', 'calendar-dashboard');
 
-	/**
-	 * @inheritDoc
-	 */
-	public function load(): void {
-		\OCP\Util::addScript('calendar', 'calendar-dashboard');
-
-		$this->initialStateService->provideLazyInitialState(Application::APP_ID, 'dashboard_data', function () {
-			return $this->dataService;
-		});
-	}
+        $this->initialStateService->provideLazyInitialState(Application::APP_ID, 'dashboard_data', function () {
+            return $this->dataService;
+        });
+    }
 }

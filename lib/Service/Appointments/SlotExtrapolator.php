@@ -27,30 +27,32 @@ namespace OCA\Calendar\Service\Appointments;
 
 use OCA\Calendar\Db\AppointmentConfig;
 
-class SlotExtrapolator {
+class SlotExtrapolator
+{
+    /**
+     * @param AppointmentConfig $config
+     * @param Interval[] $availabilityIntervals
+     * @param int $to
+     *
+     * @return Interval[]
+     */
+    public function extrapolate(
+        AppointmentConfig $config,
+        array $availabilityIntervals
+    ): array {
+        $increment = $config->getIncrement();
+        $length = $config->getLength();
+        $slots = [];
 
-	/**
-	 * @param AppointmentConfig $config
-	 * @param Interval[] $availabilityIntervals
-	 * @param int $to
-	 *
-	 * @return Interval[]
-	 */
-	public function extrapolate(AppointmentConfig $config,
-								array $availabilityIntervals): array {
-		$increment = $config->getIncrement();
-		$length = $config->getLength();
-		$slots = [];
+        foreach ($availabilityIntervals as $available) {
+            $from = $available->getStart();
+            $to = $available->getEnd();
 
-		foreach ($availabilityIntervals as $available) {
-			$from = $available->getStart();
-			$to = $available->getEnd();
+            for ($t = $from; ($t + $length) <= $to; $t += $increment) {
+                $slots[] = new Interval($t, $t + $length);
+            }
+        }
 
-			for ($t = $from; ($t + $length) <= $to; $t += $increment) {
-				$slots[] = new Interval($t, $t + $length);
-			}
-		}
-
-		return $slots;
-	}
+        return $slots;
+    }
 }

@@ -21,6 +21,7 @@ declare(strict_types=1);
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace OCA\Calendar\Dashboard;
 
 use ChristophWurst\Nextcloud\Testing\TestCase;
@@ -28,62 +29,69 @@ use OCA\Calendar\Service\JSDataService;
 use OCP\IInitialStateService;
 use OCP\IL10N;
 
-class CalendarWidgetTest extends TestCase {
+class CalendarWidgetTest extends TestCase
+{
+    /** @var IL10N|\PHPUnit\Framework\MockObject\MockObject */
+    private $l10n;
 
-	/** @var IL10N|\PHPUnit\Framework\MockObject\MockObject */
-	private $l10n;
+    /** @var IInitialStateService|\PHPUnit\Framework\MockObject\MockObject */
+    private $initialState;
 
-	/** @var IInitialStateService|\PHPUnit\Framework\MockObject\MockObject */
-	private $initialState;
+    /** @var JSDataService|\PHPUnit\Framework\MockObject\MockObject */
+    private $service;
 
-	/** @var JSDataService|\PHPUnit\Framework\MockObject\MockObject */
-	private $service;
+    /** @var CalendarWidget */
+    private $widget;
 
-	/** @var CalendarWidget */
-	private $widget;
+    protected function setUp(): void
+    {
+        parent::setUp();
 
-	protected function setUp(): void {
-		parent::setUp();
+        $this->l10n = $this->createMock(IL10N::class);
+        $this->initialState = $this->createMock(IInitialStateService::class);
+        $this->service = $this->createMock(JSDataService::class);
 
-		$this->l10n = $this->createMock(IL10N::class);
-		$this->initialState = $this->createMock(IInitialStateService::class);
-		$this->service = $this->createMock(JSDataService::class);
+        $this->widget = new CalendarWidget($this->l10n, $this->initialState, $this->service);
+    }
 
-		$this->widget = new CalendarWidget($this->l10n, $this->initialState, $this->service);
-	}
+    public function testGetId(): void
+    {
+        $this->assertEquals('calendar', $this->widget->getId());
+    }
 
-	public function testGetId(): void {
-		$this->assertEquals('calendar', $this->widget->getId());
-	}
+    public function testGetTitle(): void
+    {
+        $this->l10n->expects($this->exactly(1))
+            ->method('t')
+            ->willReturnArgument(0);
 
-	public function testGetTitle(): void {
-		$this->l10n->expects($this->exactly(1))
-			->method('t')
-			->willReturnArgument(0);
+        $this->assertEquals('Upcoming events', $this->widget->getTitle());
+    }
 
-		$this->assertEquals('Upcoming events', $this->widget->getTitle());
-	}
+    public function testGetOrder(): void
+    {
+        $this->assertEquals(2, $this->widget->getOrder());
+    }
 
-	public function testGetOrder(): void {
-		$this->assertEquals(2, $this->widget->getOrder());
-	}
+    public function testGetIconClass(): void
+    {
+        $this->assertEquals('icon-calendar-dark', $this->widget->getIconClass());
+    }
 
-	public function testGetIconClass(): void {
-		$this->assertEquals('icon-calendar-dark', $this->widget->getIconClass());
-	}
+    public function testGetUrl(): void
+    {
+        $this->assertNull($this->widget->getUrl());
+    }
 
-	public function testGetUrl(): void {
-		$this->assertNull($this->widget->getUrl());
-	}
+    public function testLoad(): void
+    {
+        $this->initialState->expects($this->once())
+            ->method('provideLazyInitialState')
+            ->with('calendar', 'dashboard_data', $this->callback(function ($actual) {
+                $fnResult = $actual();
+                return $fnResult === $this->service;
+            }));
 
-	public function testLoad(): void {
-		$this->initialState->expects($this->once())
-			->method('provideLazyInitialState')
-			->with('calendar', 'dashboard_data', $this->callback(function ($actual) {
-				$fnResult = $actual();
-				return $fnResult === $this->service;
-			}));
-
-		$this->widget->load();
-	}
+        $this->widget->load();
+    }
 }

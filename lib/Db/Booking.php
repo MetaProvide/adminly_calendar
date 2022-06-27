@@ -54,61 +54,63 @@ use ReturnTypeWillChange;
  * @method bool isConfirmed()
  * @method void setConfirmed(bool $confirm)
  */
-class Booking extends Entity implements JsonSerializable {
+class Booking extends Entity implements JsonSerializable
+{
+    /** @var int */
+    protected $apptConfigId;
 
-	/** @var int */
-	protected $apptConfigId;
+    /** @var int */
+    protected $createdAt;
 
-	/** @var int */
-	protected $createdAt;
+    /** @var string */
+    protected $token;
 
-	/** @var string */
-	protected $token;
+    /** @var string */
+    protected $displayName;
 
-	/** @var string */
-	protected $displayName;
+    /** @var string|null */
+    protected $description;
 
-	/** @var string|null */
-	protected $description;
+    /** @var string */
+    protected $email;
 
-	/** @var string */
-	protected $email;
+    /** @var int */
+    protected $start;
 
-	/** @var int */
-	protected $start;
+    /** @var int */
+    protected $end;
 
-	/** @var int */
-	protected $end;
+    /** @var string */
+    protected $timezone;
 
-	/** @var string */
-	protected $timezone;
+    /** @var bool */
+    protected $confirmed;
 
-	/** @var bool */
-	protected $confirmed;
+    public function __construct()
+    {
+        $this->addType('id', 'integer');
+        $this->addType('apptConfigId', 'integer');
+        $this->addType('createdAt', 'integer');
+        $this->addType('start', 'integer');
+        $this->addType('end', 'integer');
+        $this->addType('confirmed', 'boolean');
+    }
 
-	public function __construct() {
-		$this->addType('id', 'integer');
-		$this->addType('apptConfigId', 'integer');
-		$this->addType('createdAt', 'integer');
-		$this->addType('start', 'integer');
-		$this->addType('end', 'integer');
-		$this->addType('confirmed', 'boolean');
-	}
-
-	#[ReturnTypeWillChange]
-	public function jsonSerialize() {
-		return [
-			'id' => $this->getId(),
-			'created_at' => $this->getCreatedAt(),
-			'apptConfigId' => $this->getApptConfigId(),
-			'token' => $this->getToken(),
-			'displayName' => $this->getDisplayName(),
-			'description' => $this->getDescription(),
-			'email' => $this->getEmail(),
-			'start' => $this->getStart(),
-			'end' => $this->getEnd(),
-			'timezone' => $this->getTimezone(),
-			'confirmed' => $this->isConfirmed(),
-		];
-	}
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'created_at' => $this->getCreatedAt(),
+            'apptConfigId' => $this->getApptConfigId(),
+            'token' => $this->getToken(),
+            'displayName' => $this->getDisplayName(),
+            'description' => $this->getDescription(),
+            'email' => $this->getEmail(),
+            'start' => $this->getStart(),
+            'end' => $this->getEnd(),
+            'timezone' => $this->getTimezone(),
+            'confirmed' => $this->isConfirmed(),
+        ];
+    }
 }

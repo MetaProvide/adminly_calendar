@@ -72,141 +72,148 @@ use function json_encode;
  * @method int|null getFutureLimit()
  * @method void setFutureLimit(?int $limit)
  */
-class AppointmentConfig extends Entity implements JsonSerializable {
+class AppointmentConfig extends Entity implements JsonSerializable
+{
+    /** @var string */
+    protected $token;
 
-	/** @var string */
-	protected $token;
+    /** @var string */
+    protected $name = '';
 
-	/** @var string */
-	protected $name = '';
+    /** @var string|null */
+    protected $description;
 
-	/** @var string|null */
-	protected $description;
+    /** @var string|null */
+    protected $location;
 
-	/** @var string|null */
-	protected $location;
+    /** @var string */
+    protected $visibility;
 
-	/** @var string */
-	protected $visibility;
+    /** @var string */
+    protected $userId;
 
-	/** @var string */
-	protected $userId;
+    /** @var string */
+    protected $targetCalendarUri;
 
-	/** @var string */
-	protected $targetCalendarUri;
+    /** @var string|null */
+    protected $calendarFreebusyUris;
 
-	/** @var string|null */
-	protected $calendarFreebusyUris;
+    /** @var string|null */
+    protected $availability;
 
-	/** @var string|null */
-	protected $availability;
+    /** @var int|null */
+    protected $start;
 
-	/** @var int|null */
-	protected $start;
+    /** @var int|null */
+    protected $end;
 
-	/** @var int|null */
-	protected $end;
+    /** @var int */
+    protected $length;
 
-	/** @var int */
-	protected $length;
+    /** @var int */
+    protected $increment;
 
-	/** @var int */
-	protected $increment;
+    /** @var int */
+    protected $preparationDuration;
 
-	/** @var int */
-	protected $preparationDuration;
+    /** @var int */
+    protected $followupDuration;
 
-	/** @var int */
-	protected $followupDuration;
+    /** @var int */
+    protected $timeBeforeNextSlot;
 
-	/** @var int */
-	protected $timeBeforeNextSlot;
+    /** @var int|null */
+    protected $dailyMax;
 
-	/** @var int|null */
-	protected $dailyMax;
+    /** @var int|null */
+    protected $futureLimit;
 
-	/** @var int|null */
-	protected $futureLimit;
+    /** @var string */
+    public const VISIBILITY_PUBLIC = 'PUBLIC';
 
-	/** @var string */
-	public const VISIBILITY_PUBLIC = 'PUBLIC';
+    /** @var string */
+    public const VISIBILITY_PRIVATE = 'PRIVATE';
 
-	/** @var string */
-	public const VISIBILITY_PRIVATE = 'PRIVATE';
+    public function __construct()
+    {
+        $this->addType('start', 'int');
+        $this->addType('end', 'int');
+        $this->addType('length', 'int');
+        $this->addType('increment', 'int');
+        $this->addType('preparationDuration', 'int');
+        $this->addType('followupDuration', 'int');
+        $this->addType('timeBeforeNextSlot', 'int');
+        $this->addType('dailyMax', 'int');
+        $this->addType('futureLimit', 'int');
+    }
 
-	public function __construct() {
-		$this->addType('start', 'int');
-		$this->addType('end', 'int');
-		$this->addType('length', 'int');
-		$this->addType('increment', 'int');
-		$this->addType('preparationDuration', 'int');
-		$this->addType('followupDuration', 'int');
-		$this->addType('timeBeforeNextSlot', 'int');
-		$this->addType('dailyMax', 'int');
-		$this->addType('futureLimit', 'int');
-	}
+    /**
+     * Total length of one slot of the appointment config
+     * in minutes
+     *
+     * @return int  Minutes of Appointment slot length
+     */
+    public function getTotalLength(): int
+    {
+        return $this->getLength() + $this->getPreparationDuration() + $this->getFollowupDuration();
+    }
 
-	/**
-	 * Total length of one slot of the appointment config
-	 * in minutes
-	 *
-	 * @return int  Minutes of Appointment slot length
-	 */
-	public function getTotalLength(): int {
-		return $this->getLength() + $this->getPreparationDuration() + $this->getFollowupDuration();
-	}
+    /**
+     * Principals always have the same format
+     *
+     * @return string
+     */
+    public function getPrincipalUri(): string
+    {
+        return 'principals/users/' . $this->userId;
+    }
 
-	/**
-	 * Principals always have the same format
-	 *
-	 * @return string
-	 */
-	public function getPrincipalUri(): string {
-		return 'principals/users/' . $this->userId;
-	}
+    public function getCalendarFreebusyUrisAsArray(): array
+    {
+        return json_decode($this->getCalendarFreebusyUris(), true);
+    }
 
-	public function getCalendarFreebusyUrisAsArray(): array {
-		return json_decode($this->getCalendarFreebusyUris(), true);
-	}
+    /**
+     * @param string[] $uris
+     */
+    public function setCalendarFreeBusyUrisAsArray(array $uris): self
+    {
+        $this->setCalendarFreebusyUris(json_encode($uris));
 
-	/**
-	 * @param string[] $uris
-	 */
-	public function setCalendarFreeBusyUrisAsArray(array $uris): self {
-		$this->setCalendarFreebusyUris(json_encode($uris));
+        return $this;
+    }
 
-		return $this;
-	}
+    public function setAvailabilityAsArray(array $availability): self
+    {
+        $this->setAvailability(json_encode($availability));
 
-	public function setAvailabilityAsArray(array $availability): self {
-		$this->setAvailability(json_encode($availability));
+        return $this;
+    }
 
-		return $this;
-	}
-
-	#[ReturnTypeWillChange]
-	public function jsonSerialize() {
-		return [
-			'id' => $this->id,
-			'token' => $this->getToken(),
-			'name' => $this->getName(),
-			'description' => $this->getDescription(),
-			'location' => $this->getLocation(),
-			'visibility' => $this->getVisibility(),
-			'userId' => $this->getUserId(),
-			'targetCalendarUri' => $this->getTargetCalendarUri(),
-			'calendarFreeBusyUris' => $this->getCalendarFreebusyUrisAsArray(),
-			'availability' => $this->getAvailability() === null ? null : json_decode($this->getAvailability(), true),
-			'start' => $this->getStart(),
-			'end' => $this->getEnd(),
-			'length' => $this->getLength(),
-			'increment' => $this->getIncrement(),
-			'preparationDuration' => $this->getPreparationDuration(),
-			'followUpDuration' => $this->getFollowupDuration(),
-			'totalLength' => $this->getTotalLength(),
-			'timeBeforeNextSlot' => $this->getTimeBeforeNextSlot(),
-			'dailyMax' => $this->getDailyMax(),
-			'futureLimit' => $this->getFutureLimit()
-		];
-	}
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'token' => $this->getToken(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'location' => $this->getLocation(),
+            'visibility' => $this->getVisibility(),
+            'userId' => $this->getUserId(),
+            'targetCalendarUri' => $this->getTargetCalendarUri(),
+            'calendarFreeBusyUris' => $this->getCalendarFreebusyUrisAsArray(),
+            'availability' => $this->getAvailability() === null ? null : json_decode($this->getAvailability(), true),
+            'start' => $this->getStart(),
+            'end' => $this->getEnd(),
+            'length' => $this->getLength(),
+            'increment' => $this->getIncrement(),
+            'preparationDuration' => $this->getPreparationDuration(),
+            'followUpDuration' => $this->getFollowupDuration(),
+            'totalLength' => $this->getTotalLength(),
+            'timeBeforeNextSlot' => $this->getTimeBeforeNextSlot(),
+            'dailyMax' => $this->getDailyMax(),
+            'futureLimit' => $this->getFutureLimit()
+        ];
+    }
 }
