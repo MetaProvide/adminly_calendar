@@ -54,7 +54,7 @@
 			<IllustrationHeader :color="illustrationColor" :illustration-url="backgroundImage" />
 		</template>
 
-		<template v-if="!isLoading && !isError"
+		<template v-if="!isLoading && !isError && !isNew"
 			#secondary-actions>
 			<ActionLink v-if="!hideEventExport && hasDownloadURL"
 				:href="downloadURL">
@@ -321,6 +321,16 @@ export default {
 
 			return !eventComponent.isPartOfRecurrenceSet() || eventComponent.isExactForkOfPrimary
 		},
+	},
+	mounted() {
+		window.addEventListener('keydown', this.keyboardCloseEditor)
+		window.addEventListener('keydown', this.keyboardSaveEvent)
+		window.addEventListener('keydown', this.keyboardDeleteEvent)
+	},
+	beforeDestroy() {
+		window.removeEventListener('keydown', this.keyboardCloseEditor)
+		window.removeEventListener('keydown', this.keyboardSaveEvent)
+		window.removeEventListener('keydown', this.keyboardDeleteEvent)
 	},
 	methods: {
 		/**
