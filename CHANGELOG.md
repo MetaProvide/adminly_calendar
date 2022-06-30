@@ -339,7 +339,7 @@
   [#2089](https://github.com/nextcloud/calendar/pull/2089)
 - Long repeating events not correctly shown on web-calender under certain conditions
   [#2048](https://github.com/nextcloud/calendar/issues/2048)
-- Repeating events not displayed on first day of monthly calendar 
+- Repeating events not displayed on first day of monthly calendar
   [#1913](https://github.com/nextcloud/calendar/issues/1913)
 
 ## 2.0.2 - 2020-03-02
@@ -490,7 +490,7 @@
   [#1655](https://github.com/nextcloud/calendar/issues/1655)
 - Sharing published link via email doesn't work
   [#1640](https://github.com/nextcloud/calendar/issues/1640)
-- Order All-day events by calendar 
+- Order All-day events by calendar
   [#760](https://github.com/nextcloud/calendar/issues/769)
 - Restructure menu for reminders
   [#1638](https://github.com/nextcloud/calendar/pull/1638)
@@ -641,7 +641,7 @@ Even though all features present on the 1.x calendar app versions have been reim
   [#809](https://github.com/nextcloud/calendar/issues/809)
 - Non-unique Id in HTML
   [#860](https://github.com/nextcloud/calendar/issues/860)
-- X-NC-GROUP-ID was not properly removed 
+- X-NC-GROUP-ID was not properly removed
   [#342](https://github.com/nextcloud/calendar/issues/342)
 - Fields in repeat area are not disabled in read-only in Edge
   [#420](https://github.com/nextcloud/calendar/issues/420)
@@ -705,7 +705,7 @@ Even though all features present on the 1.x calendar app versions have been reim
 ### Fixed
 - Double the height of the description textarea
   [#675](https://github.com/nextcloud/calendar/issues/675)
-- Fix parsing for all-day VEvents that 
+- Fix parsing for all-day VEvents that
   [#692](https://github.com/nextcloud/calendar/issues/692)
 - Manual override for timezone
   [#586](https://github.com/nextcloud/calendar/issues/586)
@@ -750,7 +750,7 @@ Even though all features present on the 1.x calendar app versions have been reim
 
 ## 1.5.5 - 2017-09-19
 ### Fixed
-- Remove invalid signed signature from release 
+- Remove invalid signed signature from release
 
 ## 1.5.4 - 2017-09-12
 ### Fixed

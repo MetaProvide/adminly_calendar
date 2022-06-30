@@ -32,39 +32,45 @@ use JsonSerializable;
 /**
  * @psalm-immutable
  */
-class Interval implements JsonSerializable {
+class Interval implements JsonSerializable
+{
+    /** @var int */
+    private $start;
 
-	/** @var int */
-	private $start;
+    /** @var int */
+    private $end;
 
-	/** @var int */
-	private $end;
+    public function __construct(int $start, int $end)
+    {
+        $this->start = $start;
+        $this->end = $end;
+    }
 
-	public function __construct(int $start, int $end) {
-		$this->start = $start;
-		$this->end = $end;
-	}
+    public function getStart(): int
+    {
+        return $this->start;
+    }
 
-	public function getStart(): int {
-		return $this->start;
-	}
+    public function getEnd(): int
+    {
+        return $this->end;
+    }
 
-	public function getEnd(): int {
-		return $this->end;
-	}
+    public function getStartAsObject(): DateTimeImmutable
+    {
+        return (new DateTimeImmutable())->setTimestamp($this->start);
+    }
 
-	public function getStartAsObject(): DateTimeImmutable {
-		return (new DateTimeImmutable())->setTimestamp($this->start);
-	}
+    public function getEndAsObject(): DateTimeImmutable
+    {
+        return (new DateTimeImmutable())->setTimestamp($this->end);
+    }
 
-	public function getEndAsObject(): DateTimeImmutable {
-		return (new DateTimeImmutable())->setTimestamp($this->end);
-	}
-
-	public function jsonSerialize(): array {
-		return [
-			'start' => $this->start,
-			'end' => $this->end,
-		];
-	}
+    public function jsonSerialize(): array
+    {
+        return [
+            'start' => $this->start,
+            'end' => $this->end,
+        ];
+    }
 }

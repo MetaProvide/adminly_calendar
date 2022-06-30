@@ -34,93 +34,98 @@ use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\IDBConnection;
 
-class BookingMapperTest extends TestCase {
-	use DatabaseTransaction;
+class BookingMapperTest extends TestCase
+{
+    use DatabaseTransaction;
 
-	/** @var IDBConnection */
-	private $db;
+    /** @var IDBConnection */
+    private $db;
 
-	/** @var BookingMapper */
-	private $mapper;
+    /** @var BookingMapper */
+    private $mapper;
 
-	protected function setUp(): void {
-		parent::setUp();
+    protected function setUp(): void
+    {
+        parent::setUp();
 
-		$this->db = OC::$server->get(IDBConnection::class);
-		$this->time = $this->createConfiguredMock(ITimeFactory::class, [
-			'getTime' => 1635721200
-		]);
-		$this->mapper = new BookingMapper(
-			$this->db,
-			$this->time
-		);
+        $this->db = OC::$server->get(IDBConnection::class);
+        $this->time = $this->createConfiguredMock(ITimeFactory::class, [
+            'getTime' => 1635721200
+        ]);
+        $this->mapper = new BookingMapper(
+            $this->db,
+            $this->time
+        );
 
-		$qb = $this->db->getQueryBuilder();
+        $qb = $this->db->getQueryBuilder();
 
-		$delete = $qb->delete($this->mapper->getTableName());
-		$delete->execute();
-	}
+        $delete = $qb->delete($this->mapper->getTableName());
+        $delete->execute();
+    }
 
-	public function testFindByIdNoData() {
-		$this->expectException(DoesNotExistException::class);
-		$this->mapper->findByToken('token');
-	}
+    public function testFindByIdNoData()
+    {
+        $this->expectException(DoesNotExistException::class);
+        $this->mapper->findByToken('token');
+    }
 
-	/**
-	 * @depends testFindByIdNoData
-	 */
-	public function testFindByToken() {
-		$booking = new Booking();
-		$booking->setApptConfigId(1);
-		$booking->setCreatedAt($this->time->getTime());
-		$booking->setToken('oken');
-		$booking->setDisplayName('Test');
-		$booking->setStart(123);
-		$booking->setEnd(123);
-		$booking->setEmail('test@test.com');
-		$booking->setTimezone('Europe/Berlin');
+    /**
+     * @depends testFindByIdNoData
+     */
+    public function testFindByToken()
+    {
+        $booking = new Booking();
+        $booking->setApptConfigId(1);
+        $booking->setCreatedAt($this->time->getTime());
+        $booking->setToken('oken');
+        $booking->setDisplayName('Test');
+        $booking->setStart(123);
+        $booking->setEnd(123);
+        $booking->setEmail('test@test.com');
+        $booking->setTimezone('Europe/Berlin');
 
-		$booking = $this->mapper->insert($booking);
-		$token = $booking->getToken();
-		$booking = $this->mapper->findByToken($token);
+        $booking = $this->mapper->insert($booking);
+        $token = $booking->getToken();
+        $booking = $this->mapper->findByToken($token);
 
-		$this->assertObjectHasAttribute('apptConfigId', $booking);
-		$this->assertEquals('1', $booking->getApptConfigId());
-		$this->assertObjectHasAttribute('createdAt', $booking);
-		$this->assertEquals($this->time->getTime(), $booking->getCreatedAt());
-		$this->assertObjectHasAttribute('token', $booking);
-		$this->assertEquals('oken', $booking->getToken());
-		$this->assertObjectHasAttribute('displayName', $booking);
-		$this->assertEquals('Test', $booking->getDisplayName());
-		$this->assertObjectHasAttribute('start', $booking);
-		$this->assertEquals(123, $booking->getStart());
-		$this->assertObjectHasAttribute('end', $booking);
-		$this->assertEquals(123, $booking->getEnd());
-		$this->assertObjectHasAttribute('email', $booking);
-		$this->assertEquals('test@test.com', $booking->getEmail());
-		$this->assertObjectHasAttribute('timezone', $booking);
-		$this->assertEquals('Europe/Berlin', $booking->getTimezone());
-	}
+        $this->assertObjectHasAttribute('apptConfigId', $booking);
+        $this->assertEquals('1', $booking->getApptConfigId());
+        $this->assertObjectHasAttribute('createdAt', $booking);
+        $this->assertEquals($this->time->getTime(), $booking->getCreatedAt());
+        $this->assertObjectHasAttribute('token', $booking);
+        $this->assertEquals('oken', $booking->getToken());
+        $this->assertObjectHasAttribute('displayName', $booking);
+        $this->assertEquals('Test', $booking->getDisplayName());
+        $this->assertObjectHasAttribute('start', $booking);
+        $this->assertEquals(123, $booking->getStart());
+        $this->assertObjectHasAttribute('end', $booking);
+        $this->assertEquals(123, $booking->getEnd());
+        $this->assertObjectHasAttribute('email', $booking);
+        $this->assertEquals('test@test.com', $booking->getEmail());
+        $this->assertObjectHasAttribute('timezone', $booking);
+        $this->assertEquals('Europe/Berlin', $booking->getTimezone());
+    }
 
-	public function testDeleteOutdated():void {
-		$booking = new Booking();
-		$booking->setApptConfigId(1);
-		$booking->setCreatedAt(891485);
-		$booking->setToken('okfdfssdsdfen');
-		$booking->setDisplayName('Test');
-		$booking->setStart(123);
-		$booking->setEnd(123);
-		$booking->setEmail('test@test.com');
-		$booking->setTimezone('Europe/Berlin');
-		$booking = $this->mapper->insert($booking);
-		$token = $booking->getToken();
-		$booking = $this->mapper->findByToken($token);
+    public function testDeleteOutdated(): void
+    {
+        $booking = new Booking();
+        $booking->setApptConfigId(1);
+        $booking->setCreatedAt(891485);
+        $booking->setToken('okfdfssdsdfen');
+        $booking->setDisplayName('Test');
+        $booking->setStart(123);
+        $booking->setEnd(123);
+        $booking->setEmail('test@test.com');
+        $booking->setTimezone('Europe/Berlin');
+        $booking = $this->mapper->insert($booking);
+        $token = $booking->getToken();
+        $booking = $this->mapper->findByToken($token);
 
-		$row = $this->mapper->deleteOutdated(86400);
+        $row = $this->mapper->deleteOutdated(86400);
 
-		$this->assertEquals(1, $row);
+        $this->assertEquals(1, $row);
 
-		$this->expectException(DoesNotExistException::class);
-		$this->mapper->findByToken($token);
-	}
+        $this->expectException(DoesNotExistException::class);
+        $this->mapper->findByToken($token);
+    }
 }

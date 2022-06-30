@@ -21,6 +21,7 @@ declare(strict_types=1);
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace OCA\Calendar\RepairSteps;
 
 use OCP\IConfig;
@@ -29,96 +30,101 @@ use OCP\IUserManager;
 use OCP\Migration\IOutput;
 use ChristophWurst\Nextcloud\Testing\TestCase;
 
-class CurrentViewNameRepairStepTest extends TestCase {
+class CurrentViewNameRepairStepTest extends TestCase
+{
+    /** @var IUserManager|\PHPUnit_Framework_MockObject_MockObject */
+    private $userManager;
 
-	/** @var IUserManager|\PHPUnit_Framework_MockObject_MockObject */
-	private $userManager;
+    /** @var IConfig|\PHPUnit_Framework_MockObject_MockObject */
+    private $config;
 
-	/** @var IConfig|\PHPUnit_Framework_MockObject_MockObject */
-	private $config;
+    /** @var CurrentViewNameRepairStep */
+    private $repairStep;
 
-	/** @var CurrentViewNameRepairStep */
-	private $repairStep;
+    protected function setUp(): void
+    {
+        parent::setUp();
 
-	protected function setUp():void {
-		parent::setUp();
+        $this->userManager = $this->createMock(IUserManager::class);
+        $this->config = $this->createMock(IConfig::class);
 
-		$this->userManager = $this->createMock(IUserManager::class);
-		$this->config = $this->createMock(IConfig::class);
+        $this->repairStep = new CurrentViewNameRepairStep(
+            $this->userManager,
+            $this->config
+        );
+    }
 
-		$this->repairStep = new CurrentViewNameRepairStep($this->userManager,
-			$this->config);
-	}
+    public function testGetName(): void
+    {
+        $this->assertEquals('Update name of the stored view', $this->repairStep->getName());
+    }
 
-	public function testGetName():void {
-		$this->assertEquals('Update name of the stored view', $this->repairStep->getName());
-	}
+    public function testRun(): void
+    {
+        $this->userManager->expects($this->once())
+            ->method('callForSeenUsers')
+            ->with($this->callback(function ($fn) {
+                $user1 = $this->createMock(IUser::class);
+                $user1->method('getUID')->willReturn('user1');
 
-	public function testRun():void {
-		$this->userManager->expects($this->once())
-			->method('callForSeenUsers')
-			->with($this->callback(function ($fn) {
-				$user1 = $this->createMock(IUser::class);
-				$user1->method('getUID')->willReturn('user1');
+                $user2 = $this->createMock(IUser::class);
+                $user2->method('getUID')->willReturn('user2');
 
-				$user2 = $this->createMock(IUser::class);
-				$user2->method('getUID')->willReturn('user2');
+                $user3 = $this->createMock(IUser::class);
+                $user3->method('getUID')->willReturn('user3');
 
-				$user3 = $this->createMock(IUser::class);
-				$user3->method('getUID')->willReturn('user3');
+                $user4 = $this->createMock(IUser::class);
+                $user4->method('getUID')->willReturn('user4');
 
-				$user4 = $this->createMock(IUser::class);
-				$user4->method('getUID')->willReturn('user4');
+                $user5 = $this->createMock(IUser::class);
+                $user5->method('getUID')->willReturn('user5');
 
-				$user5 = $this->createMock(IUser::class);
-				$user5->method('getUID')->willReturn('user5');
+                $user6 = $this->createMock(IUser::class);
+                $user6->method('getUID')->willReturn('user6');
 
-				$user6 = $this->createMock(IUser::class);
-				$user6->method('getUID')->willReturn('user6');
+                $user7 = $this->createMock(IUser::class);
+                $user7->method('getUID')->willReturn('user7');
 
-				$user7 = $this->createMock(IUser::class);
-				$user7->method('getUID')->willReturn('user7');
+                $user8 = $this->createMock(IUser::class);
+                $user8->method('getUID')->willReturn('user8');
 
-				$user8 = $this->createMock(IUser::class);
-				$user8->method('getUID')->willReturn('user8');
+                $fn($user1);
+                $fn($user2);
+                $fn($user3);
+                $fn($user4);
+                $fn($user5);
+                $fn($user6);
+                $fn($user7);
+                $fn($user8);
 
-				$fn($user1);
-				$fn($user2);
-				$fn($user3);
-				$fn($user4);
-				$fn($user5);
-				$fn($user6);
-				$fn($user7);
-				$fn($user8);
+                return true;
+            }));
 
-				return true;
-			}));
+        $this->config
+            ->method('getUserValue')
+            ->willReturnMap([
+                ['user1', 'calendar', 'currentView', null, 'agendaDay'],
+                ['user2', 'calendar', 'currentView', null, 'agendaWeek'],
+                ['user3', 'calendar', 'currentView', null, 'month'],
+                ['user4', 'calendar', 'currentView', null, 'otherView'],
+                ['user5', 'calendar', 'currentView', null, null],
+                ['user7', 'calendar', 'currentView', null, 'timeGridWeek'],
+            ]);
+        $this->config
+            ->method('setUserValue')
+            ->withConsecutive(
+                ['user1', 'calendar', 'currentView', 'timeGridDay'],
+                ['user2', 'calendar', 'currentView', 'timeGridWeek'],
+                ['user3', 'calendar', 'currentView', 'dayGridMonth'],
+                ['user4', 'calendar', 'currentView', 'dayGridMonth'],
+                ['user6', 'calendar', 'currentView', null],
+                ['user8', 'calendar', 'currentView', null, 'dayGridMonth']
+            );
 
-		$this->config
-			->method('getUserValue')
-			->willReturnMap([
-				['user1', 'calendar', 'currentView', null, 'agendaDay'],
-				['user2', 'calendar', 'currentView', null, 'agendaWeek'],
-				['user3', 'calendar', 'currentView', null, 'month'],
-				['user4', 'calendar', 'currentView', null, 'otherView'],
-				['user5', 'calendar', 'currentView', null, null],
-				['user7', 'calendar', 'currentView', null, 'timeGridWeek'],
-			]);
-		$this->config
-			->method('setUserValue')
-			->withConsecutive(
-				['user1', 'calendar', 'currentView', 'timeGridDay'],
-				['user2', 'calendar', 'currentView', 'timeGridWeek'],
-				['user3', 'calendar', 'currentView', 'dayGridMonth'],
-				['user4', 'calendar', 'currentView', 'dayGridMonth'],
-				['user6', 'calendar', 'currentView', null],
-				['user8', 'calendar', 'currentView', null, 'dayGridMonth']
-			);
+        $output = $this->createMock(IOutput::class);
+        $output->expects($this->never())
+            ->method($this->anything());
 
-		$output = $this->createMock(IOutput::class);
-		$output->expects($this->never())
-			->method($this->anything());
-
-		$this->repairStep->run($output);
-	}
+        $this->repairStep->run($output);
+    }
 }
