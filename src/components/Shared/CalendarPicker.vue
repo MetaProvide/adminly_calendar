@@ -60,6 +60,7 @@ export default {
 		 * @param {object} newCalendar The selected calendar
 		 */
 		change(newCalendar) {
+			console.log("changed");
 			if (!newCalendar) {
 				return
 			}

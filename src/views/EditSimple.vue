@@ -100,7 +100,8 @@
 				:is-read-only="isReadOnly"
 				@select-calendar="changeCalendar" />
 
-			<PropertyTitle :value="title"
+			<PropertyTitle v-if="!isSlot"
+				:value="title"
 				:is-read-only="isReadOnly"
 				@update:value="updateTitle" />
 
@@ -118,12 +119,14 @@
 				@update-end-timezone="updateEndTimezone"
 				@toggle-all-day="toggleAllDay" />
 
-			<PropertyText :is-read-only="isReadOnly"
+			<PropertyText v-if="!isSlot"
+				:is-read-only="isReadOnly"
 				:prop-model="rfcProps.description"
 				:value="description"
 				@update:value="updateDescription" />
 
-			<Repeat :calendar-object-instance="calendarObjectInstance"
+			<Repeat v-if="!isSlot"
+				:calendar-object-instance="calendarObjectInstance"
 				:recurrence-rule="calendarObjectInstance.recurrenceRule"
 				:is-read-only="isReadOnly"
 				:is-editing-master-item="isEditingMasterItem"
@@ -212,6 +215,7 @@ export default {
 			hasDescription: false,
 			boundaryElement: document.querySelector('#app-content > .fc'),
 			isVisible: true,
+			isSlot: false,
 		}
 	},
 	watch: {
@@ -303,6 +307,15 @@ export default {
 
 			return matchingDomObject
 		},
+		changeCalendar(value) {
+			//console.log("changed");
+			if(value.displayName == "Slot") {
+				this.isSlot = true;
+			}else{
+				this.isSlot = false;
+			}
+
+		}
 	},
 }
 </script>
