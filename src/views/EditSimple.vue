@@ -310,13 +310,7 @@ export default {
 			return matchingDomObject
 		},
 		switchCalendar(value) {
-			console.log("changed")
-			if(value.displayName == "Slot") {
-				this.isSlot = true
-			}else{
-				this.isSlot = false
-			}
-
+			this.isSlot = value.displayName == "Slot"
 		}
 	},
 }
