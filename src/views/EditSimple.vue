@@ -98,7 +98,8 @@
 				:calendars="calendars"
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
-				@select-calendar="changeCalendar" />
+				@select-calendar="changeCalendar"
+				@switch-calendar="switchCalendar" />
 
 			<PropertyTitle v-if="!isSlot"
 				:value="title"
@@ -133,7 +134,8 @@
 				:is-recurrence-exception="isRecurrenceException"
 				@force-this-and-all-future="forceModifyingFuture" />
 
-			<AlarmList :calendar-object-instance="calendarObjectInstance"
+			<AlarmList v-if="!isSlot"
+				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
 			<div class="adminly-buttons">
@@ -307,12 +309,12 @@ export default {
 
 			return matchingDomObject
 		},
-		changeCalendar(value) {
-			//console.log("changed");
+		switchCalendar(value) {
+			console.log("changed")
 			if(value.displayName == "Slot") {
-				this.isSlot = true;
+				this.isSlot = true
 			}else{
-				this.isSlot = false;
+				this.isSlot = false
 			}
 
 		}

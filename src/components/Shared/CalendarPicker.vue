@@ -5,7 +5,7 @@
 		:options="calendars"
 		:value="value"
 		:multiple="multiple"
-		@select="change"
+		@change="change"
 		@remove="remove">
 		<template #singleLabel="{ option }">
 			<CalendarPickerOption v-bind="option" />
@@ -60,7 +60,7 @@ export default {
 		 * @param {object} newCalendar The selected calendar
 		 */
 		change(newCalendar) {
-			console.log("changed");
+			this.$emit('switch-calendar', newCalendar)
 			if (!newCalendar) {
 				return
 			}
