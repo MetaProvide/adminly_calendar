@@ -28,7 +28,8 @@
 				:value="calendar"
 				:calendars="calendars"
 				:show-calendar-on-select="true"
-				@select-calendar="selectCalendar" />
+				@select-calendar="selectCalendar"
+				@switch-calendar="switchCalendar" />
 
 			<CalendarPickerOption v-else
 				:color="calendar.color"
@@ -78,6 +79,9 @@ export default {
 		 */
 		selectCalendar(value) {
 			this.$emit('select-calendar', value)
+		},
+		switchCalendar(value) {
+			this.$emit('switch-calendar', value)
 		},
 	},
 }
