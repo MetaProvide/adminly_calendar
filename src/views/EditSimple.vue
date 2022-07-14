@@ -126,7 +126,7 @@
 				:value="description"
 				@update:value="updateDescription" />
 
-			<Repeat v-if="!isSlot"
+			<Repeat
 				:calendar-object-instance="calendarObjectInstance"
 				:recurrence-rule="calendarObjectInstance.recurrenceRule"
 				:is-read-only="isReadOnly"
