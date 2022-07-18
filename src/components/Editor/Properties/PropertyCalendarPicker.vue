@@ -69,6 +69,9 @@ export default {
 			return this.calendar !== undefined
 		},
 	},
+	mounted() {
+		this.$emit('selected-calendar', this.calendar)
+	},
 	methods: {
 		/**
 		 * Emits the select calendar event

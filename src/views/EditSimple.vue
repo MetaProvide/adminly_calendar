@@ -99,7 +99,8 @@
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
 				@select-calendar="changeCalendar"
-				@switch-calendar="switchCalendar" />
+				@switch-calendar="switchCalendar"
+				@selected-calendar="currentCalendar" />
 
 			<PropertyTitle v-if="!isSlot"
 				:value="title"
@@ -126,8 +127,7 @@
 				:value="description"
 				@update:value="updateDescription" />
 
-			<Repeat
-				:calendar-object-instance="calendarObjectInstance"
+			<Repeat :calendar-object-instance="calendarObjectInstance"
 				:recurrence-rule="calendarObjectInstance.recurrenceRule"
 				:is-read-only="isReadOnly"
 				:is-editing-master-item="isEditingMasterItem"
@@ -310,6 +310,9 @@ export default {
 			return matchingDomObject
 		},
 		switchCalendar(value) {
+			this.isSlot = value.url.includes('appointment-slots')
+		},
+		currentCalendar(value) {
 			this.isSlot = value.url.includes('appointment-slots')
 		}
 	},
