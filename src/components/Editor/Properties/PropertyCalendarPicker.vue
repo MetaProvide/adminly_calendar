@@ -70,7 +70,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.$emit('selected-calendar', this.calendar)
+		this.$emit('current-calendar', this.calendar)
 	},
 	methods: {
 		/**
