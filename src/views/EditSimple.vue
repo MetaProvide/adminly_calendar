@@ -310,7 +310,7 @@ export default {
 			return matchingDomObject
 		},
 		switchCalendar(value) {
-			this.isSlot = value.displayName == "Slot"
+			this.isSlot = value.url.includes('appointment-slots')
 		}
 	},
 }
