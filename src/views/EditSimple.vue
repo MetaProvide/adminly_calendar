@@ -99,8 +99,8 @@
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
 				@select-calendar="changeCalendar"
-				@switch-calendar="switchCalendar"
-				@selected-calendar="currentCalendar" />
+				@switch-calendar="isSlotCheck"
+				@current-calendar="isSlotCheck" />
 
 			<PropertyTitle v-if="!isSlot"
 				:value="title"
@@ -309,12 +309,9 @@ export default {
 
 			return matchingDomObject
 		},
-		switchCalendar(value) {
+		isSlotCheck(value) {
 			this.isSlot = value.url.includes('appointment-slots')
 		},
-		currentCalendar(value) {
-			this.isSlot = value.url.includes('appointment-slots')
-		}
 	},
 }
 </script>
