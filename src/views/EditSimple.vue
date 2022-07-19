@@ -94,13 +94,13 @@
 				</Actions>
 			</div>
 
-			<PropertyCalendarPicker v-if="showCalendarPicker && showCalendarSelect"
+			<PropertyCalendarPicker v-if="showCalendarPicker"
 				:calendars="calendars"
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
 				@select-calendar="changeCalendar"
-				@switch-calendar="isSlotCheck"
-				@current-calendar="isSlotCheck" />
+				@switch-calendar="switchCalendar"
+				@selected-calendar="currentCalendar" />
 
 			<PropertyTitle v-if="!isSlot"
 				:value="title"
@@ -218,8 +218,6 @@ export default {
 			boundaryElement: document.querySelector('#app-content > .fc'),
 			isVisible: true,
 			isSlot: false,
-			showCalendarSelect: true,
-			isNew: true,
 		}
 	},
 	watch: {
@@ -251,14 +249,14 @@ export default {
 		window.addEventListener('keydown', this.keyboardSaveEvent)
 		window.addEventListener('keydown', this.keyboardDeleteEvent)
 		this.$nextTick(() => {
-			this.isNew = this.$route.name === 'NewPopoverView'
+			const isNew = this.$route.name === 'NewPopoverView'
 
 			// V3 of V-Tooltip will have a prop to define the reference element for popper.js
 			// For now we have to stick to this ugly hack
 			// https://github.com/Akryum/v-tooltip/issues/60
 			this.$refs.popover
 				.$children[0]
-				.$refs.trigger = this.getDomElementForPopover(this.isNew, this.$route)
+				.$refs.trigger = this.getDomElementForPopover(isNew, this.$route)
 		})
 	},
 	beforeDestroy() {
@@ -311,10 +309,12 @@ export default {
 
 			return matchingDomObject
 		},
-		isSlotCheck(value) {
+		switchCalendar(value) {
 			this.isSlot = value.url.includes('appointment-slots')
-			this.showCalendarSelect = this.isNew
 		},
+		currentCalendar(value) {
+			this.isSlot = value.url.includes('appointment-slots')
+		}
 	},
 }
 </script>
