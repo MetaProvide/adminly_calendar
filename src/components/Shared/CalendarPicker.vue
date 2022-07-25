@@ -8,6 +8,7 @@
 				:value="calendar"
 				checked
 				v-model="selected"
+				:id="calendar.displayName"
 			/>
 			<input
 				v-else
@@ -15,8 +16,9 @@
 				name="calendar-picker"
 				:value="calendar"
 				v-model="selected"
+				:id="calendar.displayName"
 			/>
-			<span>{{ calendar.displayName }}</span>
+			<label :for="calendar.displayName">{{ calendar.displayName }}</label>
 		</div>
 	</div>
 </template>
