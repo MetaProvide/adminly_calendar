@@ -104,18 +104,6 @@ export default {
 	justify-content: space-around;
 }
 
-ul {
-	display: flex;
-	justify-content: space-around;
-}
-
-li {
-	position: relative;
-	display: flex;
-	align-items: center;
-	background-color: transparent;
-}
-
 .option {
 	display: flex;
 	align-items: center;
