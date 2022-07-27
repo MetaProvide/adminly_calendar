@@ -108,4 +108,8 @@ export default {
 	display: flex;
 	align-items: center;
 }
+
+input[type="radio"] {
+	cursor: pointer
+}
 </style>
