@@ -2,6 +2,7 @@
 # later. See the LICENSE file.
 
 app_name=adminly_calendar
+app_id=calendar
 build_directory=$(CURDIR)/build
 temp_build_directory=$(build_directory)/temp
 build_tools_directory=$(CURDIR)/build/tools
@@ -102,7 +103,7 @@ build-tarball:
 	--exclude="Makefile" \
 	--exclude="package-lock.json" \
 	--exclude="package.json" \
-	../$(app_name)/ $(temp_build_directory)/$(app_name)
+	../$(app_name)/ $(temp_build_directory)/$(app_id)
 	tar czf $(build_directory)/$(app_name).tar.gz \
-		-C $(temp_build_directory) $(app_name)
+		-C $(temp_build_directory) $(app_id)
 
