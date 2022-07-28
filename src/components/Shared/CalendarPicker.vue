@@ -110,6 +110,7 @@ export default {
 }
 
 input[type="radio"] {
-	cursor: pointer
+	cursor: pointer;
+	width: auto !important;
 }
 </style>
