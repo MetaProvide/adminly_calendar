@@ -138,6 +138,12 @@
 				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
+			<button v-if="!isSlot"
+				:disabled="isCreateTalkRoomButtonDisabled"
+				@click="createTalkRoom">
+				Add video call link
+			</button>
+
 			<div class="adminly-buttons">
 				<Button class="cancel-button" @click="cancel">
 					<template #icon>
@@ -171,6 +177,7 @@ import PropertyText from '../components/Editor/Properties/PropertyText.vue'
 import SaveButtons from '../components/Editor/SaveButtons.vue'
 import PopoverLoadingIndicator from '../components/Popover/PopoverLoadingIndicator.vue'
 import { getPrefixedRoute } from '../utils/router.js'
+import { createTalkRoom, doesDescriptionContainTalkLink } from '../services/talkService.js'
 
 import CalendarBlank from 'vue-material-design-icons/CalendarBlank.vue'
 import Close from 'vue-material-design-icons/Close.vue'
@@ -206,9 +213,20 @@ export default {
 		EditorMixin,
 	],
 	computed: {
-	  ...mapState({
-		  hideEventExport: (state) => state.settings.hideEventExport,
-	  }),
+		...mapState({
+			hideEventExport: (state) => state.settings.hideEventExport,
+		}),
+		isCreateTalkRoomButtonDisabled() {
+			if (this.creatingTalkRoom) {
+				return true
+			}
+
+			if (doesDescriptionContainTalkLink(this.calendarObjectInstance.description)) {
+				return true
+			}
+
+			return false
+		},
 	},
 	data() {
 		return {
@@ -311,6 +329,29 @@ export default {
 		},
 		isSlotCheck(value) {
 			this.isSlot = value.url.includes('appointment-slots')
+		},
+		async createTalkRoom() {
+			const NEW_LINE = '\r\n'
+			try {
+				this.creatingTalkRoom = true
+				const url = await createTalkRoom(this.calendarObjectInstance.title)
+
+				let newDescription
+				if (!this.calendarObjectInstance.description) {
+					newDescription = url + NEW_LINE
+				} else {
+					newDescription = this.calendarObjectInstance.description + NEW_LINE + NEW_LINE + url + NEW_LINE
+				}
+
+				this.$store.commit('changeDescription', {
+					calendarObjectInstance: this.calendarObjectInstance,
+					description: newDescription,
+				})
+			} catch (error) {
+				alert(this.$t('calendar', 'Error creating Talk room'))
+			} finally {
+				this.creatingTalkRoom = false
+			}
 		},
 	},
 }
