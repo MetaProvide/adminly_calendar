@@ -138,6 +138,16 @@
 				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
+			<div v-if="!isSlot">
+				<input v-model="clientEmail" type="email"/>
+				<button
+					@click="addAttendee">
+					Add client
+				</button>
+			</div>
+
+			<!-- <Multiselect v-if="!isSlot" v-model="value2" :options="options" /> -->
+
 			<button v-if="!isSlot"
 				:disabled="isCreateTalkRoomButtonDisabled"
 				@click="createTalkRoom">
@@ -236,6 +246,7 @@ export default {
 			boundaryElement: document.querySelector('#app-content > .fc'),
 			isVisible: true,
 			isSlot: false,
+			clientEmail: '',
 		}
 	},
 	watch: {
@@ -352,6 +363,21 @@ export default {
 			} finally {
 				this.creatingTalkRoom = false
 			}
+		},
+		addAttendee() {
+			console.log(this.clientEmail)
+			this.$store.commit('addAttendee', {
+				calendarObjectInstance: this.calendarObjectInstance,
+				commonName: this.clientEmail,
+				uri: this.clientEmail,
+				calendarUserType: 'INDIVIDUAL',
+				participationStatus: 'NEEDS-ACTION',
+				role: 'REQ-PARTICIPANT',
+				rsvp: true,
+				language: null,
+				timezoneId: null,
+				organizer: this.$store.getters.getCurrentUserPrincipal,
+			})
 		},
 	},
 }
