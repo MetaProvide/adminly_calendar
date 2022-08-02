@@ -138,17 +138,20 @@
 				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
-			<div v-if="!isSlot && !isReadOnly"
-				class="adminly-inputs">
-				<div class="client-add">
-					<input v-model="clientEmail" type="email" placeholder="Client's email"/>
-					<button
-						@click="addAttendee">
-						+
-					</button>
-				</div>
-
-				<!-- <Multiselect v-if="!isSlot" v-model="value2" :options="options" /> -->
+			<div v-if="!isSlot && !isReadOnly" class="adminly-inputs">
+				<Multiselect v-if="!isSlot"
+					:options="clientsList"
+					@select="addAttendee"
+					placeholder='Select client'>
+					<template #option="{ option }">
+						<div class="client-list-item">
+							<span>
+								{{ option.name }}
+							</span>
+							<p>{{ option.email }}</p>
+						</div>
+					</template>
+				</Multiselect>
 
 				<button
 					:disabled="isCreateTalkRoomButtonDisabled"
@@ -181,6 +184,7 @@ import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import ActionLink from '@nextcloud/vue/dist/Components/ActionLink'
 import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
 import Popover from '@nextcloud/vue/dist/Components/Popover'
+import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
 import EditorMixin from '../mixins/EditorMixin'
 import PropertyTitle from '../components/Editor/Properties/PropertyTitle.vue'
 import PropertyTitleTimePicker from '../components/Editor/Properties/PropertyTitleTimePicker.vue'
@@ -199,6 +203,8 @@ import { mapState } from 'vuex'
 
 import Repeat from '../components/Editor/Repeat/Repeat.vue'
 import AlarmList from '../components/Editor/Alarm/AlarmList'
+
+import { ClientsUtil } from '../utils.js';
 
 export default {
 	name: 'EditSimple',
@@ -220,6 +226,7 @@ export default {
 		Delete,
 		Repeat,
 		AlarmList,
+		Multiselect,
 	},
 	mixins: [
 		EditorMixin,
@@ -249,6 +256,8 @@ export default {
 			isVisible: true,
 			isSlot: false,
 			clientEmail: '',
+			value2: '',
+			clientsList: [],
 		}
 	},
 	watch: {
@@ -275,7 +284,7 @@ export default {
 			}
 		},
 	},
-	mounted() {
+	async mounted() {
 		window.addEventListener('keydown', this.keyboardCloseEditor)
 		window.addEventListener('keydown', this.keyboardSaveEvent)
 		window.addEventListener('keydown', this.keyboardDeleteEvent)
@@ -289,6 +298,8 @@ export default {
 				.$children[0]
 				.$refs.trigger = this.getDomElementForPopover(isNew, this.$route)
 		})
+
+		this.clientsList = await ClientsUtil.fetchClients()
 	},
 	beforeDestroy() {
 		window.removeEventListener('keydown', this.keyboardCloseEditor)
@@ -366,13 +377,13 @@ export default {
 				this.creatingTalkRoom = false
 			}
 		},
-		addAttendee() {
+		addAttendee(selectedValue) {
 			const NEW_LINE = '\r\n'
 
 			this.$store.commit('addAttendee', {
 				calendarObjectInstance: this.calendarObjectInstance,
-				commonName: this.clientEmail,
-				uri: this.clientEmail,
+				commonName: selectedValue.email,
+				uri: selectedValue.email,
 				calendarUserType: 'INDIVIDUAL',
 				participationStatus: 'NEEDS-ACTION',
 				role: 'REQ-PARTICIPANT',
@@ -384,9 +395,14 @@ export default {
 
 			let newDescription
 			if (!this.calendarObjectInstance.description) {
-				newDescription = this.clientEmail
+				newDescription = selectedValue.name + NEW_LINE
+								+ selectedValue.phoneNumber + NEW_LINE
+								+ selectedValue.email
 			} else {
-				newDescription = this.calendarObjectInstance.description + NEW_LINE + this.clientEmail
+				newDescription = this.calendarObjectInstance.description + NEW_LINE
+								+ selectedValue.name + NEW_LINE
+								+ selectedValue.phoneNumber + NEW_LINE
+								+ selectedValue.email
 			}
 
 			this.$store.commit('changeDescription', {
@@ -480,18 +496,21 @@ export default {
 	display: flex;
 	flex-direction: column;
 
-	input{
-		width: 90%;
-	}
-
-	button, input{
+	button{
 		background-color: white;
-		border-radius: 6px;
-		border-color: var(--color-main-text);
+		border-radius: 6px !important;
+		border-color: var(--color-main-text) !important;
 	}
+}
 
-	.client-add{
-		display: flex;
+.client-list-item{
+	span{
+		font-weight: 500;
 	}
+}
+
+.multiselect__tags{
+	border-radius: 6px !important;
+	border-color: var(--color-main-text) !important;
 }
 </style>
