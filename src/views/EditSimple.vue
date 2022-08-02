@@ -508,7 +508,7 @@ export default {
 }
 
 .talk-button{
-	margin-top: 0.3rem;
+	margin-top: 0.3rem !important;
 	background-color: white !important;
 	border-radius: 6px !important;
 	border-color: var(--color-main-text) !important;
