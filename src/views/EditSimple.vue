@@ -138,22 +138,24 @@
 				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
-			<div v-if="!isSlot">
-				<input v-model="clientEmail" type="email"/>
+			<div v-if="!isSlot && !isReadOnly"
+				class="adminly-inputs">
+				<div class="client-add">
+					<input v-model="clientEmail" type="email" placeholder="Client's email"/>
+					<button
+						@click="addAttendee">
+						+
+					</button>
+				</div>
+
+				<!-- <Multiselect v-if="!isSlot" v-model="value2" :options="options" /> -->
+
 				<button
-					@click="addAttendee">
-					Add client
+					:disabled="isCreateTalkRoomButtonDisabled"
+					@click="createTalkRoom">
+					Add video call link
 				</button>
 			</div>
-
-			<!-- <Multiselect v-if="!isSlot" v-model="value2" :options="options" /> -->
-
-			<button v-if="!isSlot"
-				:disabled="isCreateTalkRoomButtonDisabled"
-				@click="createTalkRoom">
-				Add video call link
-			</button>
-
 			<div class="adminly-buttons">
 				<Button class="cancel-button" @click="cancel">
 					<template #icon>
@@ -349,9 +351,9 @@ export default {
 
 				let newDescription
 				if (!this.calendarObjectInstance.description) {
-					newDescription = url + NEW_LINE
+					newDescription = url
 				} else {
-					newDescription = this.calendarObjectInstance.description + NEW_LINE + NEW_LINE + url + NEW_LINE
+					newDescription = this.calendarObjectInstance.description + NEW_LINE + url
 				}
 
 				this.$store.commit('changeDescription', {
@@ -365,7 +367,8 @@ export default {
 			}
 		},
 		addAttendee() {
-			console.log(this.clientEmail)
+			const NEW_LINE = '\r\n'
+
 			this.$store.commit('addAttendee', {
 				calendarObjectInstance: this.calendarObjectInstance,
 				commonName: this.clientEmail,
@@ -378,6 +381,20 @@ export default {
 				timezoneId: null,
 				organizer: this.$store.getters.getCurrentUserPrincipal,
 			})
+
+			let newDescription
+			if (!this.calendarObjectInstance.description) {
+				newDescription = this.clientEmail
+			} else {
+				newDescription = this.calendarObjectInstance.description + NEW_LINE + this.clientEmail
+			}
+
+			this.$store.commit('changeDescription', {
+				calendarObjectInstance: this.calendarObjectInstance,
+				description: newDescription,
+			})
+
+			this.clientEmail = ''
 		},
 	},
 }
@@ -456,6 +473,25 @@ export default {
 			color: var(--color-main-text) !important;
 			padding: 0;
 		}
+	}
+}
+
+.adminly-inputs{
+	display: flex;
+	flex-direction: column;
+
+	input{
+		width: 90%;
+	}
+
+	button, input{
+		background-color: white;
+		border-radius: 6px;
+		border-color: var(--color-main-text);
+	}
+
+	.client-add{
+		display: flex;
 	}
 }
 </style>
