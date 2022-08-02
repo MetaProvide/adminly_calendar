@@ -140,8 +140,13 @@
 
 			<div v-if="!isSlot && !isReadOnly" class="adminly-inputs">
 				<Multiselect v-if="!isSlot"
-					:options="clientsList"
+					:options="clientSearchList"
+					:searchable="true"
+					:internal-search="false"
+					:show-no-results="true"
+					:show-no-options="false"
 					@select="addAttendee"
+					@search-change="findClients"
 					placeholder='Select client'>
 					<template #option="{ option }">
 						<div class="client-list-item">
@@ -204,7 +209,7 @@ import { mapState } from 'vuex'
 import Repeat from '../components/Editor/Repeat/Repeat.vue'
 import AlarmList from '../components/Editor/Alarm/AlarmList'
 
-import { ClientsUtil } from '../utils.js';
+import { ClientsUtil } from '../utils.js'
 
 export default {
 	name: 'EditSimple',
@@ -258,6 +263,7 @@ export default {
 			clientEmail: '',
 			value2: '',
 			clientsList: [],
+			clientSearchList: [],
 		}
 	},
 	watch: {
@@ -300,6 +306,7 @@ export default {
 		})
 
 		this.clientsList = await ClientsUtil.fetchClients()
+		this.clientSearchList = this.clientsList
 	},
 	beforeDestroy() {
 		window.removeEventListener('keydown', this.keyboardCloseEditor)
@@ -411,6 +418,15 @@ export default {
 			})
 
 			this.clientEmail = ''
+		},
+		findClients(query) {
+			this.clientSearchList = this.clientsList.filter((p) => {
+				return (
+					p.name
+						.toLowerCase()
+						.indexOf(query.toLowerCase()) !== -1
+				);
+			});
 		},
 	},
 }
