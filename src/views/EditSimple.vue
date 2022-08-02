@@ -138,32 +138,31 @@
 				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
-			<div v-if="!isSlot && !isReadOnly" class="adminly-inputs">
-				<Multiselect v-if="!isSlot"
-					:options="clientSearchList"
-					:searchable="true"
-					:internal-search="false"
-					:show-no-results="true"
-					:show-no-options="false"
-					@select="addAttendee"
-					@search-change="findClients"
-					placeholder='Select client'>
-					<template #option="{ option }">
-						<div class="client-list-item">
-							<span>
-								{{ option.name }}
-							</span>
-							<p>{{ option.email }}</p>
-						</div>
-					</template>
-				</Multiselect>
+			<Multiselect v-if="!isSlot && !isReadOnly"
+				:options="clientSearchList"
+				:searchable="true"
+				:internal-search="false"
+				:show-no-results="true"
+				:show-no-options="false"
+				@select="addAttendee"
+				@search-change="findClients"
+				placeholder='Select client'>
+				<template #option="{ option }">
+					<div class="client-list-item">
+						<span>
+							{{ option.name }}
+						</span>
+						<p>{{ option.email }}</p>
+					</div>
+				</template>
+			</Multiselect>
 
-				<button
-					:disabled="isCreateTalkRoomButtonDisabled"
-					@click="createTalkRoom">
-					Add video call link
-				</button>
-			</div>
+			<button v-if="!isSlot && !isReadOnly"
+				class="talk-button"
+				:disabled="isCreateTalkRoomButtonDisabled"
+				@click="createTalkRoom">
+				Add video call link
+			</button>
 			<div class="adminly-buttons">
 				<Button class="cancel-button" @click="cancel">
 					<template #icon>
@@ -508,15 +507,11 @@ export default {
 	}
 }
 
-.adminly-inputs{
-	display: flex;
-	flex-direction: column;
-
-	button{
-		background-color: white;
-		border-radius: 6px !important;
-		border-color: var(--color-main-text) !important;
-	}
+.talk-button{
+	margin-top: 0.3rem;
+	background-color: white !important;
+	border-radius: 6px !important;
+	border-color: var(--color-main-text) !important;
 }
 
 .client-list-item{
@@ -528,5 +523,9 @@ export default {
 .multiselect__tags{
 	border-radius: 6px !important;
 	border-color: var(--color-main-text) !important;
+}
+
+.multiselect--single, .talk-button{
+	width: 100% !important;
 }
 </style>
