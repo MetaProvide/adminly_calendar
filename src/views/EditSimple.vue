@@ -157,12 +157,11 @@
 				</template>
 			</Multiselect>
 
-			<button v-if="!isSlot && !isReadOnly"
-				class="talk-button"
-				:disabled="isCreateTalkRoomButtonDisabled"
-				@click="createTalkRoom">
-				Add video call link
-			</button>
+			<PropertyTalkButton :calendar-object-instance="calendarObjectInstance"
+				:is-read-only="isReadOnly"
+				:is-slot="isSlot"
+			/>
+
 			<div class="adminly-buttons">
 				<Button class="cancel-button" @click="cancel">
 					<template #icon>
@@ -194,10 +193,10 @@ import PropertyTitle from '../components/Editor/Properties/PropertyTitle.vue'
 import PropertyTitleTimePicker from '../components/Editor/Properties/PropertyTitleTimePicker.vue'
 import PropertyCalendarPicker from '../components/Editor/Properties/PropertyCalendarPicker.vue'
 import PropertyText from '../components/Editor/Properties/PropertyText.vue'
+import PropertyTalkButton from '../components/Editor/Properties/PropertyTalkButton.vue'
 import SaveButtons from '../components/Editor/SaveButtons.vue'
 import PopoverLoadingIndicator from '../components/Popover/PopoverLoadingIndicator.vue'
 import { getPrefixedRoute } from '../utils/router.js'
-import { createTalkRoom, doesDescriptionContainTalkLink } from '../services/talkService.js'
 
 import CalendarBlank from 'vue-material-design-icons/CalendarBlank.vue'
 import Close from 'vue-material-design-icons/Close.vue'
@@ -219,6 +218,7 @@ export default {
 		PropertyCalendarPicker,
 		PropertyTitleTimePicker,
 		PropertyTitle,
+		PropertyTalkButton,
 		Popover,
 		Actions,
 		ActionButton,
@@ -239,17 +239,6 @@ export default {
 		...mapState({
 			hideEventExport: (state) => state.settings.hideEventExport,
 		}),
-		isCreateTalkRoomButtonDisabled() {
-			if (this.creatingTalkRoom) {
-				return true
-			}
-
-			if (doesDescriptionContainTalkLink(this.calendarObjectInstance.description)) {
-				return true
-			}
-
-			return false
-		},
 	},
 	data() {
 		return {
@@ -359,29 +348,6 @@ export default {
 		},
 		isSlotCheck(value) {
 			this.isSlot = value.url.includes('appointment-slots')
-		},
-		async createTalkRoom() {
-			const NEW_LINE = '\r\n'
-			try {
-				this.creatingTalkRoom = true
-				const url = await createTalkRoom(this.calendarObjectInstance.title)
-
-				let newDescription
-				if (!this.calendarObjectInstance.description) {
-					newDescription = url
-				} else {
-					newDescription = this.calendarObjectInstance.description + NEW_LINE + url
-				}
-
-				this.$store.commit('changeDescription', {
-					calendarObjectInstance: this.calendarObjectInstance,
-					description: newDescription,
-				})
-			} catch (error) {
-				alert(this.$t('calendar', 'Error creating Talk room'))
-			} finally {
-				this.creatingTalkRoom = false
-			}
 		},
 		addAttendee(selectedValue) {
 			const NEW_LINE = '\r\n'
@@ -505,13 +471,6 @@ export default {
 			padding: 0;
 		}
 	}
-}
-
-.talk-button{
-	margin-top: 0.3rem !important;
-	background-color: white !important;
-	border-radius: 6px !important;
-	border-color: var(--color-main-text) !important;
 }
 
 .client-list-item{
