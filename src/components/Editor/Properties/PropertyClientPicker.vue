@@ -1,0 +1,111 @@
+<template>
+	<Multiselect v-if="!isSlot && !isReadOnly"
+		:options="clientSearchList"
+		:searchable="true"
+		:internal-search="false"
+		:show-no-results="true"
+		:show-no-options="false"
+		@select="addAttendee"
+		@search-change="findClients"
+		placeholder='Select client'>
+		<template #option="{ option }">
+			<div class="client-list-item">
+				<span>
+					{{ option.name }}
+				</span>
+				<p>{{ option.email }}</p>
+			</div>
+		</template>
+	</Multiselect>
+</template>
+
+<script>
+import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
+import { ClientsUtil } from '../../../utils.js'
+
+export default {
+	name: 'PropertyClientPicker',
+	components: {
+		Multiselect,
+	},
+	props: {
+		calendarObjectInstance: {
+			type: Object,
+			required: true,
+		},
+		isReadOnly: {
+			type: Boolean,
+			required: true,
+		},
+		isSlot: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	data() {
+		return {
+			clientsList: [],
+			clientSearchList: [],
+		}
+	},
+	async mounted() {
+		this.clientsList = await ClientsUtil.fetchClients()
+		this.clientSearchList = this.clientsList
+	},
+	methods: {
+		addAttendee(selectedValue) {
+			const NEW_LINE = '\r\n'
+
+			this.$store.commit('addAttendee', {
+				calendarObjectInstance: this.calendarObjectInstance,
+				commonName: selectedValue.email,
+				uri: selectedValue.email,
+				calendarUserType: 'INDIVIDUAL',
+				participationStatus: 'NEEDS-ACTION',
+				role: 'REQ-PARTICIPANT',
+				rsvp: true,
+				language: null,
+				timezoneId: null,
+				organizer: this.$store.getters.getCurrentUserPrincipal,
+			})
+
+			let newDescription
+			if (!this.calendarObjectInstance.description) {
+				newDescription = selectedValue.name + NEW_LINE
+								+ selectedValue.phoneNumber + NEW_LINE
+								+ selectedValue.email
+			} else {
+				newDescription = this.calendarObjectInstance.description + NEW_LINE
+								+ selectedValue.name + NEW_LINE
+								+ selectedValue.phoneNumber + NEW_LINE
+								+ selectedValue.email
+			}
+
+			this.$store.commit('changeDescription', {
+				calendarObjectInstance: this.calendarObjectInstance,
+				description: newDescription,
+			})
+
+			this.clientEmail = ''
+		},
+		findClients(query) {
+			this.clientSearchList = this.clientsList.filter((p) => {
+				return (
+					p.name
+						.toLowerCase()
+						.indexOf(query.toLowerCase()) !== -1
+				);
+			});
+		},
+	},
+}
+</script>
+
+<style scoped>
+.talk-button{
+	margin-top: 0.3rem !important;
+	background-color: white !important;
+	border-radius: 6px !important;
+	border-color: var(--color-main-text) !important;
+}
+</style>

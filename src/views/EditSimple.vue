@@ -138,24 +138,9 @@
 				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
-			<Multiselect v-if="!isSlot && !isReadOnly"
-				:options="clientSearchList"
-				:searchable="true"
-				:internal-search="false"
-				:show-no-results="true"
-				:show-no-options="false"
-				@select="addAttendee"
-				@search-change="findClients"
-				placeholder='Select client'>
-				<template #option="{ option }">
-					<div class="client-list-item">
-						<span>
-							{{ option.name }}
-						</span>
-						<p>{{ option.email }}</p>
-					</div>
-				</template>
-			</Multiselect>
+			<PropertyClientPicker :is-read-only="isReadOnly"
+				:calendar-object-instance="calendarObjectInstance"
+				:is-slot="isSlot"/>
 
 			<PropertyTalkButton :calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly"
@@ -187,13 +172,13 @@ import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import ActionLink from '@nextcloud/vue/dist/Components/ActionLink'
 import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
 import Popover from '@nextcloud/vue/dist/Components/Popover'
-import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
 import EditorMixin from '../mixins/EditorMixin'
 import PropertyTitle from '../components/Editor/Properties/PropertyTitle.vue'
 import PropertyTitleTimePicker from '../components/Editor/Properties/PropertyTitleTimePicker.vue'
 import PropertyCalendarPicker from '../components/Editor/Properties/PropertyCalendarPicker.vue'
 import PropertyText from '../components/Editor/Properties/PropertyText.vue'
 import PropertyTalkButton from '../components/Editor/Properties/PropertyTalkButton.vue'
+import PropertyClientPicker from '../components/Editor/Properties/PropertyClientPicker.vue'
 import SaveButtons from '../components/Editor/SaveButtons.vue'
 import PopoverLoadingIndicator from '../components/Popover/PopoverLoadingIndicator.vue'
 import { getPrefixedRoute } from '../utils/router.js'
@@ -207,8 +192,6 @@ import { mapState } from 'vuex'
 import Repeat from '../components/Editor/Repeat/Repeat.vue'
 import AlarmList from '../components/Editor/Alarm/AlarmList'
 
-import { ClientsUtil } from '../utils.js'
-
 export default {
 	name: 'EditSimple',
 	components: {
@@ -219,6 +202,7 @@ export default {
 		PropertyTitleTimePicker,
 		PropertyTitle,
 		PropertyTalkButton,
+		PropertyClientPicker,
 		Popover,
 		Actions,
 		ActionButton,
@@ -230,7 +214,6 @@ export default {
 		Delete,
 		Repeat,
 		AlarmList,
-		Multiselect,
 	},
 	mixins: [
 		EditorMixin,
@@ -248,10 +231,6 @@ export default {
 			boundaryElement: document.querySelector('#app-content > .fc'),
 			isVisible: true,
 			isSlot: false,
-			clientEmail: '',
-			value2: '',
-			clientsList: [],
-			clientSearchList: [],
 		}
 	},
 	watch: {
@@ -292,9 +271,6 @@ export default {
 				.$children[0]
 				.$refs.trigger = this.getDomElementForPopover(isNew, this.$route)
 		})
-
-		this.clientsList = await ClientsUtil.fetchClients()
-		this.clientSearchList = this.clientsList
 	},
 	beforeDestroy() {
 		window.removeEventListener('keydown', this.keyboardCloseEditor)
@@ -348,50 +324,6 @@ export default {
 		},
 		isSlotCheck(value) {
 			this.isSlot = value.url.includes('appointment-slots')
-		},
-		addAttendee(selectedValue) {
-			const NEW_LINE = '\r\n'
-
-			this.$store.commit('addAttendee', {
-				calendarObjectInstance: this.calendarObjectInstance,
-				commonName: selectedValue.email,
-				uri: selectedValue.email,
-				calendarUserType: 'INDIVIDUAL',
-				participationStatus: 'NEEDS-ACTION',
-				role: 'REQ-PARTICIPANT',
-				rsvp: true,
-				language: null,
-				timezoneId: null,
-				organizer: this.$store.getters.getCurrentUserPrincipal,
-			})
-
-			let newDescription
-			if (!this.calendarObjectInstance.description) {
-				newDescription = selectedValue.name + NEW_LINE
-								+ selectedValue.phoneNumber + NEW_LINE
-								+ selectedValue.email
-			} else {
-				newDescription = this.calendarObjectInstance.description + NEW_LINE
-								+ selectedValue.name + NEW_LINE
-								+ selectedValue.phoneNumber + NEW_LINE
-								+ selectedValue.email
-			}
-
-			this.$store.commit('changeDescription', {
-				calendarObjectInstance: this.calendarObjectInstance,
-				description: newDescription,
-			})
-
-			this.clientEmail = ''
-		},
-		findClients(query) {
-			this.clientSearchList = this.clientsList.filter((p) => {
-				return (
-					p.name
-						.toLowerCase()
-						.indexOf(query.toLowerCase()) !== -1
-				);
-			});
 		},
 	},
 }

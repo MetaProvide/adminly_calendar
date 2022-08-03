@@ -12,9 +12,6 @@ import { createTalkRoom, doesDescriptionContainTalkLink } from '../../../service
 
 export default {
 	name: 'PropertyTalkButton',
-	directives: {
-		focus,
-	},
 	props: {
 		calendarObjectInstance: {
 			type: Object,
@@ -27,10 +24,6 @@ export default {
 		isSlot: {
 			type: Boolean,
 			default: false,
-		},
-		value: {
-			type: String,
-			default: '',
 		},
 	},
 	computed: {
