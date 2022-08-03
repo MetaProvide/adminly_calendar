@@ -74,7 +74,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .talk-button{
 	margin-top: 0.3rem !important;
 	background-color: white !important;
