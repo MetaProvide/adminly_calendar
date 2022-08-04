@@ -48,6 +48,13 @@ export default {
 			clientSearchList: [],
 		}
 	},
+	computed: {
+		attendees() {
+			return this.calendarObjectInstance.attendees.filter(attendee => {
+				return !['RESOURCE', 'ROOM'].includes(attendee.attendeeProperty.userType)
+			})
+		},
+	},
 	async mounted() {
 		this.clientsList = await ClientsUtil.fetchClients()
 		this.clientSearchList = this.clientsList
@@ -55,6 +62,8 @@ export default {
 	methods: {
 		addAttendee(selectedValue) {
 			const NEW_LINE = '\r\n'
+			if(this.attendees.length)
+				this.removeAttendee(this.attendees.pop())
 
 			this.$store.commit('addAttendee', {
 				calendarObjectInstance: this.calendarObjectInstance,
@@ -87,6 +96,15 @@ export default {
 			})
 
 			this.clientEmail = ''
+			console.log(this.attendees)
+		},
+		removeAttendee(attendee) {
+			console.log('removing')
+			console.log(attendee)
+			this.$store.commit('removeAttendee', {
+				calendarObjectInstance: this.calendarObjectInstance,
+				attendee,
+			})
 		},
 		findClients(query) {
 			this.clientSearchList = this.clientsList.filter((p) => {
