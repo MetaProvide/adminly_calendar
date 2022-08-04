@@ -96,11 +96,20 @@ export default {
 			})
 
 			this.clientEmail = ''
-			console.log(this.attendees)
 		},
 		removeAttendee(attendee) {
-			console.log('removing')
-			console.log(attendee)
+			const phoneRegex = /\+?[1-9][0-9]{7,14}/g
+			const phone = this.calendarObjectInstance.description.match(phoneRegex)
+			const email = attendee.uri
+			const newDescription = ''
+
+			console.log(phone + " " + email)
+
+			this.$store.commit('changeDescription', {
+				calendarObjectInstance: this.calendarObjectInstance,
+				description: newDescription,
+			})
+
 			this.$store.commit('removeAttendee', {
 				calendarObjectInstance: this.calendarObjectInstance,
 				attendee,
