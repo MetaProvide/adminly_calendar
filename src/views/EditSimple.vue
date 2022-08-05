@@ -399,7 +399,7 @@ export default {
 		border-radius: 7px;
 	}
 
-	input, ::placeholder, .multiselect__placeholder{
+	::placeholder, .multiselect__placeholder{
 		color: #B4C6E3;
 	}
 
