@@ -20,7 +20,7 @@
 				</div>
 			</template>
 		</Multiselect>
-		<button v-if="this.attendees.length" @click="removeAttendee()">-</button>
+		<button v-if="this.attendees.length" class="remove" @click="removeAttendee()">-</button>
 		<button v-else class="add" @click="addAttendee(selectedClient)"></button>
 	</div>
 </template>
@@ -145,7 +145,15 @@ export default {
 }
 .add{
 	background-image: url("../../../../img/add.svg");
+}
+
+.add, .remove{
 	background-position: center;
 	background-repeat: no-repeat;
+	border:  1px solid var(--color-main-text);
+	border-radius: 6px;
+	background-color: white;
+	margin: 0 0 0 0.5rem;
+	height: 100%;
 }
 </style>
