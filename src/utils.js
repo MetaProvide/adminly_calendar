@@ -13,3 +13,5 @@ export const ClientsUtil = {
 			.catch((err) => console.error(err));
 	},
 };
+
+export const NEW_LINE = '\r\n'

@@ -21,7 +21,7 @@
 
 <script>
 import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
-import { ClientsUtil } from '../../../utils.js'
+import { ClientsUtil, NEW_LINE } from '../../../utils.js'
 
 export default {
 	name: 'PropertyClientPicker',
@@ -61,7 +61,6 @@ export default {
 	},
 	methods: {
 		addAttendee(selectedValue) {
-			const NEW_LINE = '\r\n'
 			if(this.attendees.length)
 				this.removeAttendee(this.attendees.pop())
 
@@ -98,12 +97,15 @@ export default {
 			this.clientEmail = ''
 		},
 		removeAttendee(attendee) {
-			const phoneRegex = /\+?[1-9][0-9]{7,14}/g
-			const phone = this.calendarObjectInstance.description.match(phoneRegex)
+			const oldDescription = this.calendarObjectInstance.description
+			var lines = oldDescription.split(NEW_LINE)
 			const email = attendee.uri
-			const newDescription = ''
+			const emailIndex = lines.indexOf(email)
 
-			console.log(phone + " " + email)
+			lines.splice(emailIndex - 2, 3)
+			console.log(lines)
+
+			const newDescription = lines.join(NEW_LINE)
 
 			this.$store.commit('changeDescription', {
 				calendarObjectInstance: this.calendarObjectInstance,
