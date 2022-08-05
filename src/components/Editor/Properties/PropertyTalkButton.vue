@@ -1,5 +1,5 @@
 <template>
-	<button v-if="!isSlot && !isReadOnly"
+	<button v-if="writableEvent"
 		class="talk-button"
 		:disabled="isCreateTalkRoomButtonDisabled"
 		@click="createTalkRoom">
@@ -38,6 +38,9 @@ export default {
 			}
 
 			return false
+		},
+		writableEvent() {
+			return !this.isSlot && !this.isReadOnly
 		},
 	},
 	methods: {

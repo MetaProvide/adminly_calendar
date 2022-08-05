@@ -1,5 +1,5 @@
 <template>
-	<Multiselect v-if="!isSlot && !isReadOnly"
+	<Multiselect v-if="writableEvent"
 		:options="clientSearchList"
 		:searchable="true"
 		:internal-search="false"
@@ -53,6 +53,9 @@ export default {
 			return this.calendarObjectInstance.attendees.filter(attendee => {
 				return !['RESOURCE', 'ROOM'].includes(attendee.attendeeProperty.userType)
 			})
+		},
+		writableEvent() {
+			return !this.isSlot && !this.isReadOnly
 		},
 	},
 	async mounted() {
@@ -128,12 +131,3 @@ export default {
 	},
 }
 </script>
-
-<style scoped>
-.talk-button{
-	margin-top: 0.3rem !important;
-	background-color: white !important;
-	border-radius: 6px !important;
-	border-color: var(--color-main-text) !important;
-}
-</style>
