@@ -1,25 +1,28 @@
 <template>
-	<Multiselect v-if="writableEvent"
-		v-model="selectedValue"
-		label="name"
-		track-by="email"
-		:options="clientSearchList"
-		:searchable="true"
-		:internal-search="false"
-		:show-no-results="true"
-		:show-no-options="false"
-		@select="addAttendee"
-		@search-change="findClients"
-		placeholder='Select client'>
-		<template #option="{ option }">
-			<div class="client-list-item">
-				<span>
-					{{ option.name }}
-				</span>
-				<p>{{ option.email }}</p>
-			</div>
-		</template>
-	</Multiselect>
+	<div class="client-select">
+		<Multiselect v-if="writableEvent"
+			v-model="selectedClient"
+			label="name"
+			track-by="email"
+			:options="clientSearchList"
+			:searchable="true"
+			:internal-search="false"
+			:show-no-results="true"
+			:show-no-options="false"
+			@search-change="findClients"
+			placeholder='Select client'>
+			<template #option="{ option }">
+				<div class="client-list-item">
+					<span>
+						{{ option.name }}
+					</span>
+					<p>{{ option.email }}</p>
+				</div>
+			</template>
+		</Multiselect>
+		<button v-if="this.attendees.length" @click="removeAttendee()">-</button>
+		<button v-else class="add" @click="addAttendee(selectedClient)"></button>
+	</div>
 </template>
 
 <script>
@@ -49,7 +52,7 @@ export default {
 		return {
 			clientsList: [],
 			clientSearchList: [],
-			selectedValue: [],
+			selectedClient: [],
 		}
 	},
 	computed: {
@@ -68,9 +71,6 @@ export default {
 	},
 	methods: {
 		addAttendee(selectedValue) {
-			if(this.attendees.length)
-				this.removeAttendee(this.attendees.pop())
-
 			this.$store.commit('addAttendee', {
 				calendarObjectInstance: this.calendarObjectInstance,
 				commonName: selectedValue.email,
@@ -103,25 +103,29 @@ export default {
 
 			this.clientEmail = ''
 		},
-		removeAttendee(attendee) {
-			const oldDescription = this.calendarObjectInstance.description
-			const lines = oldDescription.split(NEW_LINE)
-			const email = attendee.uri
-			const emailIndex = lines.indexOf(email)
+		removeAttendee() {
+			if (this.attendees.length) {
+				const attendee = this.attendees.pop()
+				const oldDescription = this.calendarObjectInstance.description
+				const lines = oldDescription.split(NEW_LINE)
+				const email = attendee.uri
+				const emailIndex = lines.indexOf(email)
 
-			lines.splice(emailIndex - 2, 3)
+				lines.splice(emailIndex - 2, 3)
 
-			const newDescription = lines.join(NEW_LINE)
+				const newDescription = lines.join(NEW_LINE)
 
-			this.$store.commit('changeDescription', {
-				calendarObjectInstance: this.calendarObjectInstance,
-				description: newDescription,
-			})
+				this.$store.commit('changeDescription', {
+					calendarObjectInstance: this.calendarObjectInstance,
+					description: newDescription,
+				})
 
-			this.$store.commit('removeAttendee', {
-				calendarObjectInstance: this.calendarObjectInstance,
-				attendee,
-			})
+				this.$store.commit('removeAttendee', {
+					calendarObjectInstance: this.calendarObjectInstance,
+					attendee,
+				})
+				this.selectedClient = []
+			}
 		},
 		findClients(query) {
 			this.clientSearchList = this.clientsList.filter((p) => {
@@ -135,3 +139,13 @@ export default {
 	},
 }
 </script>
+<style scoped>
+.client-select{
+	display: flex;
+}
+.add{
+	background-image: url("../../../../img/add.svg");
+	background-position: center;
+	background-repeat: no-repeat;
+}
+</style>
