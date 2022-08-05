@@ -57,6 +57,8 @@
 
 		<template v-else>
 			<div class="event-popover__top-right-actions">
+				<button class="close-btn" @click="cancel">
+				</button>
 				<Actions v-if="isReadOnly">
 					<ActionButton @click="showMore">
 						<template #icon>
@@ -346,7 +348,7 @@ export default {
 	}
 
 	.save-button .primary{
-		background-color: var(--adminly-light-blue);
+		background-color: var(--adminly-dark-blue);
 	}
 
 	.save-button button{
@@ -356,7 +358,7 @@ export default {
 
 	.cancel-button{
 		background-color: white;
-		color: var(--adminly-light-blue);
+		color: var(--adminly-dark-blue);
 		border: none;
 	}
 
@@ -389,6 +391,23 @@ export default {
 			color: var(--color-main-text) !important;
 			padding: 0;
 		}
+	}
+
+	input, textarea, .multiselect__tags{
+		border: 1px solid var(--color-main-text) !important;
+		border-radius: 7px;
+	}
+
+	input, ::placeholder, .multiselect__placeholder{
+		color: #B4C6E3;
+	}
+
+	.close-btn{
+		background-color: white;
+		border: none;
+		background-image: url("../../img/close.svg");
+		background-position: center;
+		background-repeat: no-repeat;
 	}
 }
 </style>
