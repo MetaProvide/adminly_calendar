@@ -1,5 +1,8 @@
 <template>
 	<Multiselect v-if="writableEvent"
+		v-model="selectedValue"
+		label="name"
+		track-by="email"
 		:options="clientSearchList"
 		:searchable="true"
 		:internal-search="false"
@@ -46,6 +49,7 @@ export default {
 		return {
 			clientsList: [],
 			clientSearchList: [],
+			selectedValue: [],
 		}
 	},
 	computed: {
