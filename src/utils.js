@@ -14,4 +14,4 @@ export const ClientsUtil = {
 	},
 };
 
-export const NEW_LINE = '\r\n'
+export const NEW_LINE = '\n'

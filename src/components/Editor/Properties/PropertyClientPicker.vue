@@ -79,7 +79,7 @@ export default {
 
 			let newDescription
 			if (!this.calendarObjectInstance.description) {
-				newDescription = selectedValue.name + NEW_LINE
+				newDescription = NEW_LINE + selectedValue.name + NEW_LINE
 								+ selectedValue.phoneNumber + NEW_LINE
 								+ selectedValue.email
 			} else {
@@ -98,12 +98,11 @@ export default {
 		},
 		removeAttendee(attendee) {
 			const oldDescription = this.calendarObjectInstance.description
-			var lines = oldDescription.split(NEW_LINE)
+			const lines = oldDescription.split(NEW_LINE)
 			const email = attendee.uri
 			const emailIndex = lines.indexOf(email)
 
 			lines.splice(emailIndex - 2, 3)
-			console.log(lines)
 
 			const newDescription = lines.join(NEW_LINE)
 

@@ -9,6 +9,7 @@
 
 <script>
 import { createTalkRoom, doesDescriptionContainTalkLink } from '../../../services/talkService.js'
+import { NEW_LINE } from '../../../utils.js'
 
 export default {
 	name: 'PropertyTalkButton',
@@ -41,7 +42,6 @@ export default {
 	},
 	methods: {
 		async createTalkRoom() {
-			const NEW_LINE = '\r\n'
 			try {
 				this.creatingTalkRoom = true
 				const url = await createTalkRoom(this.calendarObjectInstance.title)
