@@ -57,8 +57,6 @@
 
 		<template v-else>
 			<div class="event-popover__top-right-actions">
-				<button class="close-btn" @click="cancel">
-				</button>
 				<Actions v-if="isReadOnly">
 					<ActionButton @click="showMore">
 						<template #icon>
@@ -94,6 +92,7 @@
 						{{ $t('calendar', 'Delete this and all future') }}
 					</ActionButton>
 				</Actions>
+				<button class="close-btn" @click="cancel"></button>
 			</div>
 
 			<PropertyCalendarPicker v-if="showCalendarPicker"
@@ -354,12 +353,14 @@ export default {
 	.save-button button{
 		border-radius: 8px;
 		border: none;
+		font-family: "Roc Grotesk", var(--font-face);
 	}
 
 	.cancel-button{
 		background-color: white;
 		color: var(--adminly-dark-blue);
 		border: none;
+		font-family: "Roc Grotesk", var(--font-face);
 	}
 
 	> div > div:nth-child(2) .multiselect {
@@ -408,6 +409,8 @@ export default {
 		background-image: url("../../img/close.svg");
 		background-position: center;
 		background-repeat: no-repeat;
+		margin-right: 1.25rem;
+		margin-top: 0.5rem;
 	}
 }
 </style>
