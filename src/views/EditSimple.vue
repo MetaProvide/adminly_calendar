@@ -412,5 +412,9 @@ export default {
 		margin-right: 1.25rem;
 		margin-top: 0.5rem;
 	}
+
+	.action-item__menutoggle:hover{
+		background: white !important;
+	}
 }
 </style>
