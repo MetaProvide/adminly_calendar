@@ -416,5 +416,9 @@ export default {
 	.action-item__menutoggle:hover{
 		background: white !important;
 	}
+
+	input[name='calendar-picker'] {
+	accent-color: #CB6BE6;
+	}
 }
 </style>
