@@ -145,6 +145,7 @@ export default {
 .client-select {
 	display: flex;
 }
+
 .client-select .remove{
 	position: absolute;
 	height: 0.5rem;
