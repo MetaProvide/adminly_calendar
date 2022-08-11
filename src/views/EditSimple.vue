@@ -139,6 +139,15 @@
 				:calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly" />
 
+			<PropertyClientPicker :is-read-only="isReadOnly"
+				:calendar-object-instance="calendarObjectInstance"
+				:is-slot="isSlot"/>
+
+			<PropertyTalkButton :calendar-object-instance="calendarObjectInstance"
+				:is-read-only="isReadOnly"
+				:is-slot="isSlot"
+			/>
+
 			<div class="adminly-buttons">
 				<Button class="cancel-button" @click="cancel">
 					<template #icon>
@@ -169,6 +178,8 @@ import PropertyTitle from '../components/Editor/Properties/PropertyTitle.vue'
 import PropertyTitleTimePicker from '../components/Editor/Properties/PropertyTitleTimePicker.vue'
 import PropertyCalendarPicker from '../components/Editor/Properties/PropertyCalendarPicker.vue'
 import PropertyText from '../components/Editor/Properties/PropertyText.vue'
+import PropertyTalkButton from '../components/Editor/Properties/PropertyTalkButton.vue'
+import PropertyClientPicker from '../components/Editor/Properties/PropertyClientPicker.vue'
 import SaveButtons from '../components/Editor/SaveButtons.vue'
 import PopoverLoadingIndicator from '../components/Popover/PopoverLoadingIndicator.vue'
 import { getPrefixedRoute } from '../utils/router.js'
@@ -191,6 +202,8 @@ export default {
 		PropertyCalendarPicker,
 		PropertyTitleTimePicker,
 		PropertyTitle,
+		PropertyTalkButton,
+		PropertyClientPicker,
 		Popover,
 		Actions,
 		ActionButton,
@@ -207,9 +220,9 @@ export default {
 		EditorMixin,
 	],
 	computed: {
-	  ...mapState({
-		  hideEventExport: (state) => state.settings.hideEventExport,
-	  }),
+		...mapState({
+			hideEventExport: (state) => state.settings.hideEventExport,
+		}),
 	},
 	data() {
 		return {
@@ -245,7 +258,7 @@ export default {
 			}
 		},
 	},
-	mounted() {
+	async mounted() {
 		window.addEventListener('keydown', this.keyboardCloseEditor)
 		window.addEventListener('keydown', this.keyboardSaveEvent)
 		window.addEventListener('keydown', this.keyboardDeleteEvent)
@@ -420,5 +433,20 @@ export default {
 	input[name='calendar-picker'] {
 	accent-color: #CB6BE6;
 	}
+}
+
+.client-list-item{
+	span{
+		font-weight: 500;
+	}
+}
+
+.multiselect__tags{
+	border-radius: 6px !important;
+	border-color: var(--color-main-text) !important;
+}
+
+.multiselect--single, .talk-button{
+	width: 100% !important;
 }
 </style>
