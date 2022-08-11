@@ -407,8 +407,13 @@ export default {
 		}
 	}
 
-	input, textarea, .multiselect__tags, .mx-input{
-		border: 1px solid var(--color-main-text) ;
+	input, .multiselect__tags, .mx-input{
+		border: 1px solid var(--color-main-text);
+		border-radius: 7px;
+	}
+
+	textarea{
+		border: 1px solid var(--color-main-text) !important;
 		border-radius: 7px;
 	}
 

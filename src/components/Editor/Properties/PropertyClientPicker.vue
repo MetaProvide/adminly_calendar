@@ -21,7 +21,7 @@
 				</div>
 			</template>
 		</Multiselect>
-		<button v-if="this.attendees.length" class="remove" @click="removeAttendee()">-</button>
+		<button v-if="this.attendees.length" class="remove close-btn" @click="removeAttendee()"></button>
 	</div>
 </template>
 
@@ -155,6 +155,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	margin: 2px 0 !important;
 }
 
 .popover__wrapper .multiselect{
