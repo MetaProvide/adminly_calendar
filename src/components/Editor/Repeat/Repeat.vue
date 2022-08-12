@@ -24,9 +24,7 @@
 <template>
 	<div class="property-repeat">
 		<div class="property-repeat__summary">
-			<RepeatIcon class="property-repeat__summary__icon"
-				:title="$t('calendar', 'Repeat')"
-				:size="20" />
+			<span class="repeat-icon"></span>
 			<RepeatSummary class="property-repeat__summary__content"
 				:recurrence-rule="recurrenceRule" />
 			<Actions v-if="!isReadOnly">
@@ -96,7 +94,6 @@ import RepeatFreqInterval from './RepeatFreqInterval.vue'
 import RepeatUnsupportedWarning from './RepeatUnsupportedWarning.vue'
 import RepeatExceptionWarning from './RepeatExceptionWarning.vue'
 import RepeatSummary from './RepeatSummary.vue'
-import RepeatIcon from 'vue-material-design-icons/Repeat.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
 import Check from 'vue-material-design-icons/Check.vue'
 import Actions from '@nextcloud/vue/dist/Components/Actions'
@@ -113,7 +110,6 @@ export default {
 		RepeatFreqWeeklyOptions,
 		RepeatEndRepeat,
 		RepeatUnsupportedWarning,
-		RepeatIcon,
 		Pencil,
 		Check,
 		Actions,
@@ -477,3 +473,18 @@ export default {
 	},
 }
 </script>
+<style scoped>
+.repeat-icon{
+	width: 34px;
+	height: 34px;
+	background-image: url("../../../../img/repeatAdminly.svg");
+	background-position: center;
+	background-repeat: no-repeat;
+	margin-left: -5px;
+	margin-right: 5px;
+}
+
+.action-item--single {
+	opacity: 1 !important;
+}
+</style>

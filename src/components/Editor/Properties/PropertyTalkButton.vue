@@ -71,10 +71,10 @@ export default {
 </script>
 
 <style scoped>
-.talk-button{
-	margin-top: 0.3rem !important;
-	background-color: white !important;
-	border-radius: 6px !important;
-	border-color: var(--color-main-text) !important;
+.talk-button {
+	margin: 3px 0;
+	background-color: #fff !important;
+	border: 2px solid var(--color-border);
+	border-radius: 7px;
 }
 </style>
