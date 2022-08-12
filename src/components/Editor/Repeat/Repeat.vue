@@ -475,12 +475,16 @@ export default {
 </script>
 <style scoped>
 .repeat-icon{
-		width: 1.25rem;
-		height: 1.25rem;
-		background-color: white;
-		border: none;
-		background-image: url("../../../../img/repeatAdminly.svg");
-		background-position: center;
-		background-repeat: no-repeat;
-	}
+	width: 34px;
+	height: 34px;
+	background-image: url("../../../../img/repeatAdminly.svg");
+	background-position: center;
+	background-repeat: no-repeat;
+	margin-left: -5px;
+	margin-right: 5px;
+}
+
+.action-item--single {
+	opacity: 1 !important;
+}
 </style>

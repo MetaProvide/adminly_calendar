@@ -21,7 +21,7 @@
 				</div>
 			</template>
 		</Multiselect>
-		<button v-if="this.attendees.length" class="remove close-btn" @click="removeAttendee()"></button>
+		<button v-if="this.attendees.length" class="remove" @click="removeAttendee()"></button>
 	</div>
 </template>
 
@@ -144,21 +144,25 @@ export default {
 <style>
 .client-select {
 	display: flex;
+	flex-direction: column;
+	margin: 3px 0;
 }
 
-.client-select .remove{
-	position: absolute;
-	height: 0.5rem;
-	width: 0.5rem;
-	right: 2rem;
-	background: white;
+.client-select .remove {
+	align-self: flex-end;
+	background-color: unset;
+	background-image: url("../../../../img/close.svg");
+	background-position: center;
+	background-repeat: no-repeat;
+	border: unset;
 	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin: 2px 0 !important;
+	margin: 4px 0 !important;
+	padding: 6px 16px;
+	position: absolute;
+	z-index: 5;
 }
 
-.popover__wrapper .multiselect{
-	z-index: 0;
+.client-select .multiselect__single {
+	color: var(--color-main-text) !important;
 }
 </style>
