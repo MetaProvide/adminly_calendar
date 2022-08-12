@@ -361,7 +361,7 @@ export default {
 			width: 0.8rem;
 			height: 0.8rem;
 			border: 3px solid #fff;
-			outline: 3px solid var(--color-border);
+			outline: 3px solid var(--color-border-dark);
 			border-radius: 50%;
 			margin-right: 1rem;
 		}
@@ -450,7 +450,7 @@ export default {
 	.multiselect__tags,
 	.mx-input,
 	textarea {
-		border: 2px solid var(--color-border);
+		border: 2px solid var(--color-border-dark);
 		border-radius: 7px;
 	}
 
@@ -547,7 +547,7 @@ export default {
 
 .multiselect__tags{
 	border-radius: 6px !important;
-	border-color: var(--color-border) !important;
+	border-color: var(--color-border-dark) !important;
 }
 
 .multiselect--single, .talk-button{
