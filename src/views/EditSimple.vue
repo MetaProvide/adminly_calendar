@@ -95,7 +95,7 @@
 				<button class="close-btn" @click="cancel"></button>
 			</div>
 
-			<PropertyCalendarPicker v-if="showCalendarPicker"
+			<PropertyCalendarPicker v-if="showCalendarPicker && isNew"
 				:calendars="calendars"
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
