@@ -395,7 +395,11 @@ export default {
 	.adminly-buttons {
 		display: flex;
 		margin-top: 1rem;
-		justify-content: space-around;
+		justify-content: center;
+
+		button {
+			padding-inline: 1rem;
+		}
 	}
 
 	.adminly-buttons .event-popover__buttons {
