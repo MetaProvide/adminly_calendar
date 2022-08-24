@@ -398,7 +398,11 @@ export default {
 		justify-content: center;
 
 		button {
-			padding-inline: 1rem;
+			padding: 0;
+			width: 90px;
+		}
+		.primary + .update-all {
+			margin-left: 5px;
 		}
 	}
 
