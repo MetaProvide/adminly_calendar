@@ -99,7 +99,7 @@
 				:calendars="calendars"
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
-				:class="{ 'display-none' : !isNew }"
+				:class="{ 'hidden' : !isNew }"
 				@select-calendar="changeCalendar"
 				@switch-calendar="isSlotCheck"
 				@current-calendar="isSlotCheck" />
@@ -539,7 +539,7 @@ export default {
 		opacity: 1 !important;
 	}
 
-	.display-none{
+	.hidden{
 		display: none;
 	}
 }
