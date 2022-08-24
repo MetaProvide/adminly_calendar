@@ -395,7 +395,15 @@ export default {
 	.adminly-buttons {
 		display: flex;
 		margin-top: 1rem;
-		justify-content: space-around;
+		justify-content: center;
+
+		button {
+			padding: 0;
+			width: 90px;
+		}
+		.primary + .update-all {
+			margin-left: 5px;
+		}
 	}
 
 	.adminly-buttons .event-popover__buttons {
@@ -450,8 +458,8 @@ export default {
 	.multiselect__tags,
 	.mx-input,
 	textarea {
-		border: 2px solid var(--color-border-dark);
-		border-radius: 7px;
+		border: 1px solid var(--color-border-dark);
+		border-radius: var(--border-radius);
 	}
 
 	.client-select .multiselect__tags,
@@ -546,7 +554,7 @@ export default {
 }
 
 .multiselect__tags{
-	border-radius: 6px !important;
+	border-radius: var(--border-radius);
 	border-color: var(--color-border-dark) !important;
 }
 

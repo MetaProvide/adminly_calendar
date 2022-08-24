@@ -74,7 +74,7 @@ export default {
 .talk-button {
 	margin: 3px 0;
 	background-color: #fff !important;
-	border: 2px solid var(--color-border-dark);
-	border-radius: 7px;
+	border: 1px solid var(--color-border-dark);
+	border-radius: var(--border-radius);
 }
 </style>
