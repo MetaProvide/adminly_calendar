@@ -339,8 +339,8 @@ export default {
 .adminly.event-popover .popover__inner {
 	max-width: 350px;
 	width: 350px;
-	padding: 2.75rem 2.5rem 2rem 2.5rem !important;
-	border-radius: 1rem !important;
+	padding: 2.75rem 2.5rem 2rem 2.5rem;
+	border-radius: var(--adminly-border-radius) !important;
 	box-sizing: border-box;
 
 	.property-select {
@@ -567,30 +567,45 @@ export default {
 	width: 100% !important;
 }
 
-li.active{
-	a, p {
-		color: white !important;
-	}
-
-	span {
-		filter: brightness(0) invert(1);
-	}
-}
-
-li.action{
+.popover .action {
 	height: 2rem;
     display: flex;
     align-items: center;
 
-	a, p, span{
-		font-weight: 500 !important;
+	.action-link,
+	.action-button {
+		font-weight: 500;
+		opacity: 1;
+		line-height: 2rem;
+	}
+
+	.action-button__longtext {
+		align-self: center;
+		padding: 0;
+	}
+
+	.adminly-icon {
+		height: 2rem;
+		width: 2rem;
+		padding-left: 0.75rem;
+	}
+
+	&.active {
+		.action-link,
+		.action-button {
+			color: white;
+		}
+
+		.adminly-icon {
+			filter: brightness(0) invert(1);
+		}
 	}
 }
 
-.popover__inner{
-	border-bottom-left-radius: var(--adminly-border-radius-button) !important;
-	border-bottom-right-radius: var(--adminly-border-radius-button) !important;
-    padding-block: 0.5rem !important;
+.popover .popover__inner{
+	border-bottom-left-radius: var(--adminly-border-radius-button);
+	border-bottom-right-radius: var(--adminly-border-radius-button);
+    padding-block: 0.5rem;
 }
 
 .adminly-icon{
@@ -601,6 +616,7 @@ li.action{
 		display: none;
 	}
 }
+
 .delete-icon{
 	background-image: url("../../img/delete.svg");
 }
