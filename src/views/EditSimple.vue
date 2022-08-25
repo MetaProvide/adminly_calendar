@@ -69,25 +69,25 @@
 					<ActionLink v-if="!hideEventExport && hasDownloadURL"
 						:href="downloadURL">
 						<template #icon>
-							<Download :size="20" decorative />
+							<Download :size="20" decorative :class="'adminly-icon'" />
 						</template>
 						{{ $t('calendar', 'Export') }}
 					</ActionLink>
 					<ActionButton v-if="canDelete && !canCreateRecurrenceException" @click="deleteAndLeave(false)">
 						<template #icon>
-							<Delete :size="20" decorative />
+							<Delete :size="20" decorative :class="'adminly-icon'" />
 						</template>
 						{{ $t('calendar', 'Delete') }}
 					</ActionButton>
 					<ActionButton v-if="canDelete && canCreateRecurrenceException" @click="deleteAndLeave(false)">
 						<template #icon>
-							<Delete :size="20" decorative />
+							<Delete :size="20" decorative :class="'adminly-icon'" />
 						</template>
 						{{ $t('calendar', 'Delete this occurrence') }}
 					</ActionButton>
 					<ActionButton v-if="canDelete && canCreateRecurrenceException" @click="deleteAndLeave(true)">
 						<template #icon>
-							<Delete :size="20" decorative />
+							<Delete :size="20" decorative :class="'adminly-icon'" />
 						</template>
 						{{ $t('calendar', 'Delete this and all future') }}
 					</ActionButton>
@@ -340,7 +340,7 @@ export default {
 	max-width: 350px;
 	width: 350px;
 	padding: 2.75rem 2.5rem 2rem 2.5rem;
-	border-radius: 1rem;
+	border-radius: var(--adminly-border-radius);
 	box-sizing: border-box;
 
 	.property-select {
@@ -565,5 +565,63 @@ export default {
 
 .multiselect--single, .talk-button{
 	width: 100% !important;
+}
+
+.popover .action {
+	height: 2rem;
+    display: flex;
+    align-items: center;
+
+	.action-link,
+	.action-button {
+		font-weight: 500;
+		opacity: 1;
+		line-height: 2rem;
+	}
+
+	.action-button__longtext {
+		align-self: center;
+		padding: 0;
+	}
+
+	.adminly-icon {
+		height: 2rem;
+		width: 2rem;
+		padding-left: 0.75rem;
+	}
+
+	&.active {
+		.action-link,
+		.action-button {
+			color: white;
+		}
+
+		.adminly-icon {
+			filter: brightness(0) invert(1);
+		}
+	}
+}
+
+.popover .popover__inner{
+	border-bottom-left-radius: var(--adminly-border-radius-button);
+	border-bottom-right-radius: var(--adminly-border-radius-button);
+    padding-block: 0.5rem;
+}
+
+.adminly-icon{
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 15px;
+	svg{
+		display: none;
+	}
+}
+
+.delete-icon{
+	background-image: url("../../img/delete.svg");
+}
+
+.download-icon{
+	background-image: url("../../img/export.svg");
 }
 </style>
