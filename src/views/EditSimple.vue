@@ -95,10 +95,11 @@
 				<button class="close-btn" @click="cancel"></button>
 			</div>
 
-			<PropertyCalendarPicker v-if="showCalendarPicker && isNew"
+			<PropertyCalendarPicker v-if="showCalendarPicker"
 				:calendars="calendars"
 				:calendar="selectedCalendar"
 				:is-read-only="isReadOnly"
+				:class="{ 'hidden' : !isNew }"
 				@select-calendar="changeCalendar"
 				@switch-calendar="isSlotCheck"
 				@current-calendar="isSlotCheck" />
@@ -544,6 +545,10 @@ export default {
 		display: flex;
 		padding-right: 1rem;
 		opacity: 1 !important;
+	}
+
+	.hidden{
+		display: none;
 	}
 }
 
