@@ -340,7 +340,7 @@ export default {
 	max-width: 350px;
 	width: 350px;
 	padding: 2.75rem 2.5rem 2rem 2.5rem;
-	border-radius: var(--adminly-border-radius) !important;
+	border-radius: var(--adminly-border-radius);
 	box-sizing: border-box;
 
 	.property-select {
