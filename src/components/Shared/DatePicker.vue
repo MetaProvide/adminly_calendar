@@ -403,3 +403,55 @@ export default {
 	},
 }
 </script>
+<style>
+.mx-datepicker-main{
+	box-shadow: var(--adminly-box-shadow);
+	border-radius: 10px;
+}
+
+.mx-calendar-time{
+	border-radius: var(--adminly-border-radius);
+}
+
+.mx-btn.mx-btn-text.mx-time-header-title{
+    background-color: transparent;
+}
+
+.mx-time-header,
+.mx-scrollbar,
+.mx-datepicker-footer,
+.mx-btn.mx-btn-text.mx-time-header-title{
+	border: none !important;
+}
+
+.mx-time-header,
+.mx-datepicker-footer{
+	display: flex;
+}
+
+.mx-time-header{
+	flex-direction: column;
+}
+
+.mx-time-header:after {
+	content: "";
+	width: 85%;
+	height: 1px;
+	background: rgba(145, 149, 234, 0.3);
+}
+
+.mx-datepicker-footer .mx-btn{
+	box-shadow: var(--adminly-box-shadow);
+	border-radius: var(--adminly-border-radius-button) !important;
+	font-family: "Roc Grotesk", var(--font-face);
+}
+.mx-btn.mx-btn-text{
+	background-color: white;
+	border: none;
+}
+
+.mx-btn.mx-datepicker-btn-confirm{
+	background-color: var(--adminly-blue);
+}
+
+</style>
