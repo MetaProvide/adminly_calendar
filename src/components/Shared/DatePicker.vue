@@ -454,4 +454,32 @@ export default {
 	background-color: var(--adminly-blue);
 }
 
+.mx-time-columns{
+	margin: 1rem;
+	height: 85% !important;
+	width: 80% !important;
+}
+
+.mx-time-column:nth-child(3) {
+	margin-block: auto !important;
+    height: 50% !important;
+}
+
+.mx-time-column:nth-child(3)  .mx-scrollbar-wrap{
+	margin-right: 0px !important;
+}
+
+.mx-scrollbar-wrap li{
+	font-weight: 700;
+	margin-inline: 0.5rem;
+}
+
+.mx-scrollbar-wrap li.active,
+.mx-time-item:hover{
+	border-radius: var(--adminly-border-radius-button);
+}
+
+.mx-time-column .mx-time-list::after{
+	height: 0px !important;
+}
 </style>
