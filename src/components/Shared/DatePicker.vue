@@ -428,6 +428,11 @@ export default {
 
 		.mx-btn.mx-btn-text {
 			color: var(--color-main-text);
+
+			&:hover{
+				color: white;
+				background-color: var(--adminly-magenta) !important;
+			}
 		}
 	}
 
@@ -439,10 +444,6 @@ export default {
 		border-radius: var(--adminly-border-radius-button);
 	}
 
-	.mx-btn.mx-btn-text.mx-time-header-title {
-		background-color: transparent;
-	}
-
 	.mx-scrollbar,
 	.mx-btn.mx-btn-text.mx-time-header-title {
 		border: none !important;
@@ -452,6 +453,7 @@ export default {
 		display: flex;
 		flex-direction: column;
 		border: none !important;
+		margin-top: 0.7rem;
 
 		&:after {
 			content: "";
@@ -463,14 +465,8 @@ export default {
 
 	.mx-time-columns {
 		margin: 1rem;
-		height: 85% !important;
 		width: auto !important;
 	}
-
-	/* .mx-time-column:nth-child(3) {
-		margin-block: auto !important;
-		height: 50% !important;
-	} */
 
 	.mx-scrollbar-wrap{
 		li {
@@ -484,16 +480,23 @@ export default {
 		}
 	}
 
-	/* .mx-time-column .mx-time-list::after {
-		height: 32px !important;
-	} */
-
 	.mx-btn {
 		opacity: 1 !important;
 
 		&.mx-btn-text {
 			background-color: white;
 			border: none;
+
+			&.mx-time-header-title {
+				margin-bottom: 0.7rem;
+			}
+
+			&.mx-btn-current-month,
+			&.mx-btn-current-year,
+			&.mx-time-header-title {
+				background-color: transparent;
+				font-size: 1.0rem;
+			}
 		}
 
 		&.mx-btn-icon-double-left,
@@ -518,6 +521,15 @@ export default {
 
 		tr th {
 			color: #255280;
+		}
+
+		td{
+			font-weight: 400;
+		}
+	}
+	.mx-table{
+		td{
+			font-weight: 500;
 		}
 	}
 }
