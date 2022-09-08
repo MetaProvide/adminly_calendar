@@ -403,83 +403,123 @@ export default {
 	},
 }
 </script>
-<style>
+<style lang="scss">
 .mx-datepicker-main{
-	box-shadow: var(--adminly-box-shadow);
+	box-shadow: var(--adminly-box-shadow) !important;
 	border-radius: 10px;
-}
-
-.mx-calendar-time{
-	border-radius: var(--adminly-border-radius);
-}
-
-.mx-btn.mx-btn-text.mx-time-header-title{
-    background-color: transparent;
-}
-
-.mx-time-header,
-.mx-scrollbar,
-.mx-datepicker-footer,
-.mx-btn.mx-btn-text.mx-time-header-title{
 	border: none !important;
+
+	.mx-datepicker-footer{
+		padding: 1rem !important;
+		border: none !important;
+		display: flex;
+
+		.mx-btn.mx-datepicker-btn-confirm {
+			color: white;
+			border: none;
+			background-color: var(--adminly-blue);
+		}
+
+		.mx-btn {
+			box-shadow: var(--adminly-box-shadow);
+			border-radius: var(--adminly-border-radius-button) !important;
+			font-family: "Roc Grotesk", var(--font-face);
+		}
+
+		.mx-btn.mx-btn-text {
+			color: var(--color-main-text);
+		}
+	}
+
+	.mx-calendar-time {
+		border-radius: var(--adminly-border-radius);
+	}
+
+	.mx-time-item:hover {
+		border-radius: var(--adminly-border-radius-button);
+	}
+
+	.mx-btn.mx-btn-text.mx-time-header-title {
+		background-color: transparent;
+	}
+
+	.mx-scrollbar,
+	.mx-btn.mx-btn-text.mx-time-header-title {
+		border: none !important;
+	}
+
+	.mx-time-header {
+		display: flex;
+		flex-direction: column;
+		border: none !important;
+
+		&:after {
+			content: "";
+			width: 85%;
+			height: 1px;
+			background: rgba(145, 149, 234, 0.3);
+		}
+	}
+
+	.mx-time-columns {
+		margin: 1rem;
+		height: 85% !important;
+		width: auto !important;
+	}
+
+	/* .mx-time-column:nth-child(3) {
+		margin-block: auto !important;
+		height: 50% !important;
+	} */
+
+	.mx-scrollbar-wrap{
+		li {
+			font-weight: 700;
+			margin-inline: 0.5rem;
+		}
+
+		li.active,
+		.mx-time-item:hover {
+			border-radius: var(--adminly-border-radius-button);
+		}
+	}
+
+	/* .mx-time-column .mx-time-list::after {
+		height: 32px !important;
+	} */
+
+	.mx-btn {
+		opacity: 1 !important;
+
+		&.mx-btn-text {
+			background-color: white;
+			border: none;
+		}
+
+		&.mx-btn-icon-double-left,
+		&.mx-btn-icon-double-right {
+			display: none
+		}
+
+		&.mx-btn-icon-right {
+			background-image: url("../../../img/right-arrow.svg") !important;
+		}
+
+		&.mx-btn-icon-left {
+			background-image: url("../../../img/left-arrow.svg") !important;
+		}
+	}
+
+	.mx-table.mx-table-date {
+		.cell.active {
+			border: 2px solid white;
+			outline: 2px solid var(--adminly-dark-blue);
+		}
+
+		tr th {
+			color: #255280;
+		}
+	}
 }
 
-.mx-time-header,
-.mx-datepicker-footer{
-	display: flex;
-}
-
-.mx-time-header{
-	flex-direction: column;
-}
-
-.mx-time-header:after {
-	content: "";
-	width: 85%;
-	height: 1px;
-	background: rgba(145, 149, 234, 0.3);
-}
-
-.mx-datepicker-footer .mx-btn{
-	box-shadow: var(--adminly-box-shadow);
-	border-radius: var(--adminly-border-radius-button) !important;
-	font-family: "Roc Grotesk", var(--font-face);
-}
-.mx-btn.mx-btn-text{
-	background-color: white;
-	border: none;
-}
-
-.mx-btn.mx-datepicker-btn-confirm{
-	background-color: var(--adminly-blue);
-}
-
-.mx-time-columns{
-	margin: 1rem;
-	height: 85% !important;
-	width: 80% !important;
-}
-
-.mx-time-column:nth-child(3) {
-	margin-block: auto !important;
-    height: 50% !important;
-}
-
-.mx-time-column:nth-child(3)  .mx-scrollbar-wrap{
-	margin-right: 0px !important;
-}
-
-.mx-scrollbar-wrap li{
-	font-weight: 700;
-	margin-inline: 0.5rem;
-}
-
-.mx-scrollbar-wrap li.active,
-.mx-time-item:hover{
-	border-radius: var(--adminly-border-radius-button);
-}
-
-.mx-time-column .mx-time-list::after{
-	height: 0px !important;
-}
 </style>
