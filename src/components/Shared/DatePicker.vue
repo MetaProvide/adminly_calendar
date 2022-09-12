@@ -409,6 +409,19 @@ export default {
 	border-radius: 10px;
 	border: none !important;
 
+	.mx-calendar-content,
+	.mx-time-content {
+		height: 266px;
+	}
+
+	.mx-calendar-content .mx-date-row {
+		margin: 3px 0;
+	}
+
+	.mx-calendar {
+		width: 278px !important;
+	}
+
 	.mx-datepicker-footer{
 		padding: 1rem !important;
 		border: none !important;
@@ -425,6 +438,7 @@ export default {
 			box-shadow: var(--adminly-box-shadow);
 			border-radius: var(--adminly-border-radius-button) !important;
 			font-family: "Roc Grotesk", var(--font-face);
+			margin: 0;
 		}
 
 		.mx-btn.mx-btn-text {
@@ -481,9 +495,12 @@ export default {
 		}
 	}
 
+	.mx-scrollbar.mx-time-column:nth-of-type(3) .mx-scrollbar-wrap{
+		margin-right: 0 !important;
+	}
+
 	.mx-btn {
 		opacity: 1 !important;
-		margin: 0 !important;
 
 		&.mx-btn-text {
 			background-color: white;
