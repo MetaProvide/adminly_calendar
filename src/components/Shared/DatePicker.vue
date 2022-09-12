@@ -413,6 +413,7 @@ export default {
 		padding: 1rem !important;
 		border: none !important;
 		display: flex;
+	    justify-content: space-around;
 
 		.mx-btn.mx-datepicker-btn-confirm {
 			color: white;
@@ -482,6 +483,7 @@ export default {
 
 	.mx-btn {
 		opacity: 1 !important;
+		margin: 0 !important;
 
 		&.mx-btn-text {
 			background-color: white;
