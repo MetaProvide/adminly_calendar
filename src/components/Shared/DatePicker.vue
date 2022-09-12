@@ -403,3 +403,154 @@ export default {
 	},
 }
 </script>
+<style lang="scss">
+.mx-datepicker-main{
+	box-shadow: var(--adminly-box-shadow) !important;
+	border-radius: 10px;
+	border: none !important;
+
+	.mx-calendar-content,
+	.mx-time-content {
+		height: 266px;
+	}
+
+	.mx-calendar-content .mx-date-row {
+		margin: 3px 0;
+	}
+
+	.mx-calendar {
+		width: 278px !important;
+	}
+
+	.mx-datepicker-footer{
+		padding: 1rem !important;
+		border: none !important;
+		display: flex;
+	    justify-content: space-around;
+
+		.mx-btn.mx-datepicker-btn-confirm {
+			color: white;
+			border: none;
+			background-color: var(--adminly-blue);
+		}
+
+		.mx-btn {
+			box-shadow: var(--adminly-box-shadow);
+			border-radius: var(--adminly-border-radius-button) !important;
+			font-family: "Roc Grotesk", var(--font-face);
+			margin: 0;
+		}
+
+		.mx-btn.mx-btn-text {
+			color: var(--color-main-text);
+
+			&:hover{
+				color: white;
+				background-color: var(--adminly-magenta) !important;
+			}
+		}
+	}
+
+	.mx-calendar-time {
+		border-radius: var(--adminly-border-radius);
+	}
+
+	.mx-time-item:hover {
+		border-radius: var(--adminly-border-radius-button);
+	}
+
+	.mx-scrollbar,
+	.mx-btn.mx-btn-text.mx-time-header-title {
+		border: none !important;
+	}
+
+	.mx-time-header {
+		display: flex;
+		flex-direction: column;
+		border: none !important;
+		margin-top: 0.7rem;
+
+		&:after {
+			content: "";
+			width: 85%;
+			height: 1px;
+			background: rgba(145, 149, 234, 0.3);
+		}
+	}
+
+	.mx-time-columns {
+		margin: 1rem;
+		width: auto !important;
+	}
+
+	.mx-scrollbar-wrap{
+		li {
+			font-weight: 700;
+			margin-inline: 0.5rem;
+		}
+
+		li.active,
+		.mx-time-item:hover {
+			border-radius: var(--adminly-border-radius-button);
+		}
+	}
+
+	.mx-scrollbar.mx-time-column:nth-of-type(3) .mx-scrollbar-wrap{
+		margin-right: 0 !important;
+	}
+
+	.mx-btn {
+		opacity: 1 !important;
+
+		&.mx-btn-text {
+			background-color: white;
+			border: none;
+
+			&.mx-time-header-title {
+				margin-bottom: 0.7rem;
+			}
+
+			&.mx-btn-current-month,
+			&.mx-btn-current-year,
+			&.mx-time-header-title {
+				background-color: transparent;
+				font-size: 1.0rem;
+			}
+		}
+
+		&.mx-btn-icon-double-left,
+		&.mx-btn-icon-double-right {
+			display: none
+		}
+
+		&.mx-btn-icon-right {
+			background-image: url("../../../img/right-arrow.svg") !important;
+		}
+
+		&.mx-btn-icon-left {
+			background-image: url("../../../img/left-arrow.svg") !important;
+		}
+	}
+
+	.mx-table.mx-table-date {
+		.cell.active {
+			border: 2px solid white;
+			outline: 2px solid var(--adminly-dark-blue);
+		}
+
+		tr th {
+			color: #255280;
+		}
+
+		td{
+			font-weight: 400;
+		}
+	}
+	.mx-table{
+		td{
+			font-weight: 500;
+		}
+	}
+}
+
+</style>
