@@ -88,17 +88,15 @@ export default {
 				organizer: this.$store.getters.getCurrentUserPrincipal,
 			})
 
-			let newDescription
-			if (!this.calendarObjectInstance.description) {
-				newDescription = NEW_LINE + selectedValue.name + NEW_LINE
+			let newDescription = selectedValue.phoneNumber ?
+								NEW_LINE + selectedValue.name + NEW_LINE
 								+ selectedValue.phoneNumber + NEW_LINE
-								+ selectedValue.email
-			} else {
-				newDescription = this.calendarObjectInstance.description + NEW_LINE
-								+ selectedValue.name + NEW_LINE
-								+ selectedValue.phoneNumber + NEW_LINE
-								+ selectedValue.email
-			}
+								+ selectedValue.email + NEW_LINE :
+								NEW_LINE + selectedValue.name + NEW_LINE
+								+ selectedValue.email + NEW_LINE;
+
+			if (this.calendarObjectInstance.description)
+				newDescription =  this.calendarObjectInstance.description + newDescription;
 
 			this.$store.commit('changeDescription', {
 				calendarObjectInstance: this.calendarObjectInstance,
