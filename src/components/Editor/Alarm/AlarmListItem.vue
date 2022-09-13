@@ -83,12 +83,12 @@
 		<div v-if="!isReadOnly"
 			class="property-alarm-item__options">
 			<Actions>
-				<ActionRadio v-if="canChangeAlarmType || (!isAlarmTypeDisplay && forceEventAlarmType === 'DISPLAY')"
+				<!-- <ActionRadio v-if="canChangeAlarmType || (!isAlarmTypeDisplay && forceEventAlarmType === 'DISPLAY')"
 					:name="alarmTypeName"
 					:checked="isAlarmTypeDisplay"
 					@change="changeType('DISPLAY')">
 					{{ $t('calendar', 'Notification') }}
-				</ActionRadio>
+				</ActionRadio> -->
 				<ActionRadio v-if="canChangeAlarmType || (!isAlarmTypeEmail && forceEventAlarmType === 'EMAIL')"
 					:name="alarmTypeName"
 					:checked="isAlarmTypeEmail"
