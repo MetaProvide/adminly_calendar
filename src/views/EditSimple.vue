@@ -596,7 +596,8 @@ export default {
 			color: white;
 		}
 
-		.adminly-icon {
+		.adminly-icon,
+		.material-design-icon.delete-icon {
 			filter: brightness(0) invert(1);
 		}
 	}
@@ -608,7 +609,8 @@ export default {
     padding-block: 0.5rem;
 }
 
-.adminly-icon{
+.adminly-icon,
+.material-design-icon.delete-icon{
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 15px;
