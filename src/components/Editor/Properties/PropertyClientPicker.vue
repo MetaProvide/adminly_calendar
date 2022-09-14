@@ -53,6 +53,7 @@ export default {
 			clientsList: [],
 			clientSearchList: [],
 			selectedClient: [],
+			clientDataDescription: '',
 		}
 	},
 	computed: {
@@ -88,35 +89,25 @@ export default {
 				organizer: this.$store.getters.getCurrentUserPrincipal,
 			})
 
-			let newDescription
-			if (!this.calendarObjectInstance.description) {
-				newDescription = NEW_LINE + selectedValue.name + NEW_LINE
+			this.clientDataDescription = selectedValue.phoneNumber ?
+								NEW_LINE + selectedValue.name + NEW_LINE
 								+ selectedValue.phoneNumber + NEW_LINE
-								+ selectedValue.email
-			} else {
-				newDescription = this.calendarObjectInstance.description + NEW_LINE
-								+ selectedValue.name + NEW_LINE
-								+ selectedValue.phoneNumber + NEW_LINE
-								+ selectedValue.email
-			}
+								+ selectedValue.email + NEW_LINE :
+								NEW_LINE + selectedValue.name + NEW_LINE
+								+ selectedValue.email + NEW_LINE;
 
 			this.$store.commit('changeDescription', {
 				calendarObjectInstance: this.calendarObjectInstance,
-				description: newDescription,
+				description: this.calendarObjectInstance.description ?
+								this.calendarObjectInstance.description + this.clientDataDescription
+								: this.clientDataDescription,
 			})
 
 			this.clientEmail = ''
 		},
 		removeAttendee() {
 			const attendee = this.attendees.pop()
-			const oldDescription = this.calendarObjectInstance.description
-			const lines = oldDescription.split(NEW_LINE)
-			const email = attendee.uri
-			const emailIndex = lines.indexOf(email)
-
-			lines.splice(emailIndex - 2, 3)
-
-			const newDescription = lines.join(NEW_LINE)
+			const newDescription = this.calendarObjectInstance.description.replace(this.clientDataDescription, '')
 
 			this.$store.commit('changeDescription', {
 				calendarObjectInstance: this.calendarObjectInstance,
