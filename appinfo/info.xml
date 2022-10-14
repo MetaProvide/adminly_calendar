@@ -42,7 +42,7 @@
 			<name>Calendar</name>
 			<route>calendar.view.index</route>
 			<icon>adminly_calendar.svg</icon>
-			<order>2</order>
+			<order>1</order>
 		</navigation>
 	</navigations>
 </info>
