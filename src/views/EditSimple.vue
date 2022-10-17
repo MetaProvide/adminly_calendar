@@ -114,6 +114,7 @@
 				:end-date="endDate"
 				:end-timezone="endTimezone"
 				:is-all-day="isAllDay"
+				:is-slot="isSlot"
 				:is-read-only="isReadOnly"
 				:can-modify-all-day="canModifyAllDay"
 				:user-timezone="currentUserTimezone"
@@ -125,12 +126,11 @@
 
 			<PropertyClientPicker :is-read-only="isReadOnly"
 				:calendar-object-instance="calendarObjectInstance"
-				:is-slot="isSlot"/>
+				:is-slot="isSlot" />
 
 			<PropertyTalkButton :calendar-object-instance="calendarObjectInstance"
 				:is-read-only="isReadOnly"
-				:is-slot="isSlot"
-			/>
+				:is-slot="isSlot" />
 
 			<PropertyText v-if="!isSlot"
 				:is-read-only="isReadOnly"

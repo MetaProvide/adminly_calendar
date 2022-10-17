@@ -66,7 +66,7 @@
 			</div>
 		</div>
 
-		<div v-if="!isReadOnly" class="property-title-time-picker__all-day">
+		<div v-if="!isReadOnly && !isSlot" class="property-title-time-picker__all-day">
 			<input id="allDay"
 				:checked="isAllDay"
 				type="checkbox"
@@ -159,6 +159,13 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		/**
+		 * Whether or not the event is a slot
+		 */
+		isSlot: {
+			type: Boolean,
+			required: true,
+		},
 	},
 	data() {
 		return {
@@ -232,6 +239,13 @@ export default {
 		highlightEndTimezone() {
 			return this.endTimezone !== this.userTimezone
 		},
+	},
+	watch: {
+		isSlot() {
+			if(this.isSlot){
+				this.$store.state.calendarObjectInstance.calendarObjectInstance.isAllDay = false;
+			}
+		}
 	},
 	methods: {
 		/**
