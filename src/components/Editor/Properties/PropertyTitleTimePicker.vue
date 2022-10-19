@@ -26,7 +26,8 @@
 	<div class="property-title-time-picker">
 		<div v-if="!isReadOnly"
 			class="property-title-time-picker__time-pickers">
-			<DatePicker :date="startDate"
+			<DatePicker :key="startDateKey"
+				:date="startDate"
 				:timezone-id="startTimezone"
 				prefix="from"
 				:is-all-day="isAllDay"
@@ -35,7 +36,8 @@
 				@change="changeStart"
 				@change-timezone="changeStartTimezone" />
 
-			<DatePicker :date="endDate"
+			<DatePicker :key="endDateKey"
+				:date="endDate"
 				:timezone-id="endTimezone"
 				prefix="to"
 				:is-all-day="isAllDay"
@@ -66,7 +68,7 @@
 			</div>
 		</div>
 
-		<div v-if="!isReadOnly" class="property-title-time-picker__all-day">
+		<div v-if="!isReadOnly && !isSlot" class="property-title-time-picker__all-day">
 			<input id="allDay"
 				:checked="isAllDay"
 				type="checkbox"
@@ -159,11 +161,20 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		/**
+		 * Whether or not the event is a slot
+		 */
+		isSlot: {
+			type: Boolean,
+			required: true,
+		},
 	},
 	data() {
 		return {
 			showStartTimezone: false,
 			showEndTimezone: false,
+			startDateKey: 0,
+			endDateKey: 1,
 		}
 	},
 	computed: {
@@ -231,6 +242,22 @@ export default {
 		 */
 		highlightEndTimezone() {
 			return this.endTimezone !== this.userTimezone
+		},
+	},
+	watch: {
+		isSlot() {
+			if (this.isSlot) {
+				this.$store.state.calendarObjectInstance.calendarObjectInstance.isAllDay = false
+				if (this.startDate.getHours() === 0) {
+					this.$store.state.calendarObjectInstance.calendarObjectInstance.startDate.isDate = true
+					this.$store.state.calendarObjectInstance.calendarObjectInstance.startDate.setHours('10')
+					this.$store.state.calendarObjectInstance.calendarObjectInstance.endDate.isDate = true
+					this.$store.state.calendarObjectInstance.calendarObjectInstance.endDate.setHours('11')
+					// Force update the date pickers
+					this.startDateKey++
+					this.endDateKey++
+				}
+			}
 		},
 	},
 	methods: {
