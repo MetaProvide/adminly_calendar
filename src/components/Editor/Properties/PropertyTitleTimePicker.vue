@@ -247,7 +247,9 @@ export default {
 	watch: {
 		isSlot() {
 			if (this.isSlot) {
-				this.$store.state.calendarObjectInstance.calendarObjectInstance.isAllDay = false
+				if (this.$store.state.calendarObjectInstance.calendarObjectInstance.isAllDay) {
+					this.toggleAllDay()
+				}
 				if (this.startDate.getHours() === 0) {
 					this.$store.state.calendarObjectInstance.calendarObjectInstance.startDate.isDate = true
 					this.$store.state.calendarObjectInstance.calendarObjectInstance.startDate.setHours('10')
