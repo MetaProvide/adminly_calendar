@@ -20,63 +20,39 @@
   -->
 
 <template>
-	<Actions v-shortkey="shortKeyConf"
-		menu-align="right"
-		@shortkey.native="selectViewFromShortcut">
-		<template #icon>
-			<component :is="defaultIcon" :size="20" decorative />
-		</template>
-		<ActionButton v-for="view in views"
-			:key="view.id"
-			:icon="view.icon"
-			@click="selectView(view.id)">
-			<template #icon>
-				<component :is="view.icon" :size="20" decorative />
-			</template>
-			{{ view.label }}
-		</ActionButton>
-	</Actions>
+	<div class="action-item">
+		<div class="button-wrapper">
+			<button v-for="view in views"
+				:key="view.id"
+				class="view-selector-button"
+				:class="{ active: isActive(view.id) }"
+				@click="selectView(view.id)">
+				<span class="action-button__text">{{ view.label }}</span>
+			</button>
+		</div>
+	</div>
 </template>
 
 <script>
-import Actions from '@nextcloud/vue/dist/Components/Actions'
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
-
-import ViewDay from 'vue-material-design-icons/ViewDay.vue'
-import ViewGrid from 'vue-material-design-icons/ViewGrid.vue'
-import ViewList from 'vue-material-design-icons/ViewList.vue'
-import ViewModule from 'vue-material-design-icons/ViewModule.vue'
-import ViewWeek from 'vue-material-design-icons/ViewWeek.vue'
-
 export default {
 	name: 'AppNavigationHeaderViewMenu',
-	components: {
-		Actions,
-		ActionButton,
-		ViewDay,
-		ViewGrid,
-		ViewList,
-		ViewModule,
-		ViewWeek,
-	},
 	computed: {
 		views() {
 			return [{
-				id: 'timeGridDay',
-				icon: 'ViewDay',
-				label: this.$t('calendar', 'Day'),
+				id: 'dayGridMonth',
+				icon: 'ViewModule',
+				label: 'Month',
+				// label: this.$t('calendar', 'Month'),
 			}, {
 				id: 'timeGridWeek',
 				icon: 'ViewWeek',
-				label: this.$t('calendar', 'Week'),
+				label: 'Week',
+				// label: this.$t('calendar', 'Week'),
 			}, {
-				id: 'dayGridMonth',
-				icon: 'ViewModule',
-				label: this.$t('calendar', 'Month'),
-			}, {
-				id: 'listMonth',
-				icon: 'ViewList',
-				label: this.$t('calendar', 'List'),
+				id: 'timeGridDay',
+				icon: 'ViewDay',
+				label: 'Day',
+				// label: this.$t('calendar', 'Day'),
 			}]
 		},
 		shortKeyConf() {
@@ -90,15 +66,6 @@ export default {
 				listMonth: ['l'],
 				listMonth_Num: [4],
 			}
-		},
-		defaultIcon() {
-			for (const view of this.views) {
-				if (view.id === this.$route.params.view) {
-					return view.icon
-				}
-			}
-
-			return 'ViewGrid'
 		},
 	},
 	methods: {
@@ -117,6 +84,9 @@ export default {
 		},
 		selectViewFromShortcut(event) {
 			this.selectView(event.srcKey.split('_')[0])
+		},
+		isActive(viewId) {
+			return this.$route.path.includes(viewId)
 		},
 	},
 }
