@@ -39,20 +39,20 @@ export default {
 	computed: {
 		views() {
 			return [{
-				id: 'timeGridDay',
-				icon: 'ViewDay',
-				label: 'Day',
-				// label: this.$t('calendar', 'Day'),
+				id: 'dayGridMonth',
+				icon: 'ViewModule',
+				label: 'Month',
+				// label: this.$t('calendar', 'Month'),
 			}, {
 				id: 'timeGridWeek',
 				icon: 'ViewWeek',
 				label: 'Week',
 				// label: this.$t('calendar', 'Week'),
 			}, {
-				id: 'dayGridMonth',
-				icon: 'ViewModule',
-				label: 'Month',
-				// label: this.$t('calendar', 'Month'),
+				id: 'timeGridDay',
+				icon: 'ViewDay',
+				label: 'Day',
+				// label: this.$t('calendar', 'Day'),
 			}]
 		},
 		shortKeyConf() {
