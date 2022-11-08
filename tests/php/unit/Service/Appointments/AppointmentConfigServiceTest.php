@@ -30,29 +30,31 @@ use ChristophWurst\Nextcloud\Testing\TestCase;
 use OCA\Calendar\Service\Appointments\AppointmentConfigService;
 use OCP\IUser;
 
-class AppointmentConfigServiceTest extends TestCase {
+class AppointmentConfigServiceTest extends TestCase
+{
+    /** @var ServiceMockObject */
+    private $serviceMock;
 
-	/** @var ServiceMockObject */
-	private $serviceMock;
+    /** @var AppointmentConfigService */
+    private $service;
 
-	/** @var AppointmentConfigService */
-	private $service;
+    protected function setUp(): void
+    {
+        parent::setUp();
 
-	protected function setUp(): void {
-		parent::setUp();
+        $this->serviceMock = $this->createServiceMock(AppointmentConfigService::class);
+        $this->service = $this->serviceMock->getService();
+    }
 
-		$this->serviceMock = $this->createServiceMock(AppointmentConfigService::class);
-		$this->service = $this->serviceMock->getService();
-	}
+    public function testDeleteByUser(): void
+    {
+        $user = $this->createMock(IUser::class);
+        $user->method('getUid')->willReturn('user123');
+        $this->serviceMock->getParameter('mapper')
+            ->expects(self::once())
+            ->method('deleteByUserId')
+            ->with('user123');
 
-	public function testDeleteByUser(): void {
-		$user = $this->createMock(IUser::class);
-		$user->method('getUid')->willReturn('user123');
-		$this->serviceMock->getParameter('mapper')
-			->expects(self::once())
-			->method('deleteByUserId')
-			->with('user123');
-
-		$this->service->deleteByUser($user);
-	}
+        $this->service->deleteByUser($user);
+    }
 }

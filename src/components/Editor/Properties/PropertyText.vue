@@ -23,12 +23,6 @@
 
 <template>
 	<div v-if="display" class="property-text">
-		<component :is="icon"
-			:size="20"
-			:title="readableName"
-			class="property-text__icon"
-			:class="{ 'property-text__icon--hidden': !showIcon }" />
-
 		<div class="property-text__input"
 			:class="{ 'property-text__input--readonly': isReadOnly }">
 			<textarea v-if="!isReadOnly"

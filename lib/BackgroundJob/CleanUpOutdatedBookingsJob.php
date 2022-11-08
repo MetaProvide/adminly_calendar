@@ -33,32 +33,36 @@ use OCP\ILogger;
 use Psr\Log\LoggerInterface;
 use function method_exists;
 
-class CleanUpOutdatedBookingsJob extends TimedJob {
-	/** @var ILogger */
-	private $logger;
+class CleanUpOutdatedBookingsJob extends TimedJob
+{
+    /** @var ILogger */
+    private $logger;
 
-	/** @var BookingService */
-	private $service;
+    /** @var BookingService */
+    private $service;
 
-	public function __construct(ITimeFactory $time,
-								BookingService $service,
-								LoggerInterface $logger) {
-		parent::__construct($time);
-		$this->service = $service;
-		$this->logger = $logger;
+    public function __construct(
+        ITimeFactory $time,
+        BookingService $service,
+        LoggerInterface $logger
+    ) {
+        parent::__construct($time);
+        $this->service = $service;
+        $this->logger = $logger;
 
-		$this->setInterval(24 * 60 * 60);
-		/**
-		 * @todo remove check with 24+
-		 */
-		if (method_exists($this, 'setTimeSensitivity')) {
-			$this->setTimeSensitivity(self::TIME_INSENSITIVE);
-		}
-	}
+        $this->setInterval(24 * 60 * 60);
+        /**
+         * @todo remove check with 24+
+         */
+        if (method_exists($this, 'setTimeSensitivity')) {
+            $this->setTimeSensitivity(self::TIME_INSENSITIVE);
+        }
+    }
 
 
-	protected function run($argument): void {
-		$outdated = $this->service->deleteOutdated();
-		$this->logger->info('Found and deleted ' . $outdated . ' outdated booking confirmations.');
-	}
+    protected function run($argument): void
+    {
+        $outdated = $this->service->deleteOutdated();
+        $this->logger->info('Found and deleted ' . $outdated . ' outdated booking confirmations.');
+    }
 }

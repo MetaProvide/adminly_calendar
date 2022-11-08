@@ -27,10 +27,12 @@
 		"build": "webpack --node-env production --progress",
 		"dev": "webpack --node-env development --progress",
 		"watch": "webpack --node-env development --progress --watch",
-		"lint": "eslint --ext .js,.vue src",
-		"lint:fix": "eslint --ext .js,.vue src --fix",
-		"stylelint": "stylelint src css",
-		"stylelint:fix": "stylelint src css --fix",
+		"eslint": "eslint --ext .js,.vue src",
+		"eslint:fix": "eslint --ext .js,.vue src --fix",
+		"stylelint": "stylelint css/*.css css/*.scss src/**/*.scss src/**/*.vue",
+		"stylelint:fix": "stylelint css/*.css css/*.scss src/**/*.scss src/**/*.vue --fix",
+		"prettier": "prettier --check .",
+		"prettier:fix": "prettier --write .",
 		"test": "jest",
 		"test:coverage": "jest --coverage"
 	},
@@ -80,8 +82,8 @@
 		"extends @nextcloud/browserslist-config"
 	],
 	"engines": {
-		"node": ">=14.0.0",
-		"npm": ">=7.0.0"
+		"node": "^14.0.0",
+		"npm": "^7.0.0"
 	},
 	"devDependencies": {
 		"@nextcloud/babel-config": "^1.0.0",
@@ -93,11 +95,14 @@
 		"babel-core": "^7.0.0-bridge.0",
 		"babel-jest": "^27.4.4",
 		"babel-loader-exclude-node-modules-except": "^1.2.1",
+		"eslint-config-prettier": "^8.5.0",
 		"ical.js": "^1.5.0",
 		"iconfont-plugin-webpack": "^1.1.4",
 		"jest": "^27.5.1",
 		"jest-serializer-vue": "^2.0.2",
+		"prettier": "^2.6.2",
 		"resolve-url-loader": "^5.0.0",
+		"stylelint-config-prettier": "^9.0.3",
 		"vue-jest": "^3.0.7",
 		"vue-template-compiler": "^2.6.12"
 	},

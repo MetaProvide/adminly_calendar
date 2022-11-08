@@ -39,12 +39,13 @@
 		<button v-if="showUpdateOnlyThisButton"
 			class="primary"
 			@click="saveThisOnly">
-			{{ $t('calendar', 'Update this occurrence') }}
+			{{ $t('calendar', 'Update') }}
 		</button>
 		<button v-if="showUpdateThisAndFutureButton"
+			class="update-all"
 			:class="{ primary: forceThisAndAllFuture}"
 			@click="saveThisAndAllFuture">
-			{{ $t('calendar', 'Update this and all future') }}
+			{{ $t('calendar', 'Update All') }}
 		</button>
 	</div>
 </template>
@@ -97,3 +98,14 @@ export default {
 	},
 }
 </script>
+<style scoped>
+button {
+	box-shadow: 2px 2px 6px rgba(145, 149, 234, 0.3);
+}
+
+.update-all{
+	white-space: nowrap;
+	background: #9195EA;
+	color: white;
+}
+</style>

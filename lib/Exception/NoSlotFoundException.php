@@ -26,5 +26,6 @@ declare(strict_types=1);
 
 namespace OCA\Calendar\Exception;
 
-class NoSlotFoundException extends ClientException {
+class NoSlotFoundException extends ClientException
+{
 }

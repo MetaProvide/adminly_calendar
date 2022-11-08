@@ -22,30 +22,17 @@
 
 <template>
 	<div class="calendar-picker-option">
-		<div class="calendar-picker-option__color-indicator"
-			:style="{ backgroundColor: color }" />
-
-		<span class="calendar-picker-option__label">
-			{{ displayName }}
-		</span>
-
-		<Avatar v-if="isSharedWithMe"
-			class="calendar-picker-option__avatar"
-			:disable-menu="true"
-			:disable-tooltip="true"
-			:user="userId"
-			:display-name="userDisplayName"
-			:size="18" />
+		<label class="calendar-picker-option__label">
+			<input type="radio" name="calendar-picker" />
+			<span>{{ displayName }}</span>
+		</label>
 	</div>
 </template>
 
 <script>
-import Avatar from '@nextcloud/vue/dist/Components/Avatar'
-
 export default {
 	name: 'CalendarPickerOption',
 	components: {
-		Avatar,
 	},
 	props: {
 		color: {
@@ -101,3 +88,13 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss" scoped>
+.calendar-picker-option__label {
+	display: flex;
+}
+
+.calendar-picker-option__label span {
+	margin: auto;
+}
+</style>

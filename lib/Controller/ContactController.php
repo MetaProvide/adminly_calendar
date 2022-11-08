@@ -26,6 +26,7 @@ declare(strict_types=1);
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace OCA\Calendar\Controller;
 
 use OCP\AppFramework\Controller;
@@ -39,217 +40,224 @@ use OCP\IRequest;
  *
  * @package OCA\Calendar\Controller
  */
-class ContactController extends Controller {
+class ContactController extends Controller
+{
+    /** @var IManager */
+    private $contactsManager;
 
-	/** @var IManager */
-	private $contactsManager;
+    /**
+     * ContactController constructor.
+     *
+     * @param string $appName
+     * @param IRequest $request
+     * @param IManager $contacts
+     */
+    public function __construct(
+        string $appName,
+        IRequest $request,
+        IManager $contacts
+    ) {
+        parent::__construct($appName, $request);
+        $this->contactsManager = $contacts;
+    }
 
-	/**
-	 * ContactController constructor.
-	 *
-	 * @param string $appName
-	 * @param IRequest $request
-	 * @param IManager $contacts
-	 */
-	public function __construct(string $appName,
-								IRequest $request,
-								IManager $contacts) {
-		parent::__construct($appName, $request);
-		$this->contactsManager = $contacts;
-	}
+    /**
+     * Search for a location based on a contact's name or address
+     *
+     * @param string $search Name or address to search for
+     * @return JSONResponse
+     *
+     * @NoAdminRequired
+     */
+    public function searchLocation(string $search): JSONResponse
+    {
+        if (!$this->contactsManager->isEnabled()) {
+            return new JSONResponse();
+        }
 
-	/**
-	 * Search for a location based on a contact's name or address
-	 *
-	 * @param string $search Name or address to search for
-	 * @return JSONResponse
-	 *
-	 * @NoAdminRequired
-	 */
-	public function searchLocation(string $search):JSONResponse {
-		if (!$this->contactsManager->isEnabled()) {
-			return new JSONResponse();
-		}
+        $result = $this->contactsManager->search($search, ['FN', 'ADR']);
 
-		$result = $this->contactsManager->search($search, ['FN', 'ADR']);
+        $contacts = [];
+        foreach ($result as $r) {
+            // Information about system users is fetched via DAV nowadays
+            if (isset($r['isLocalSystemBook']) && $r['isLocalSystemBook']) {
+                continue;
+            }
 
-		$contacts = [];
-		foreach ($result as $r) {
-			// Information about system users is fetched via DAV nowadays
-			if (isset($r['isLocalSystemBook']) && $r['isLocalSystemBook']) {
-				continue;
-			}
+            if (!isset($r['ADR'])) {
+                continue;
+            }
 
-			if (!isset($r['ADR'])) {
-				continue;
-			}
+            $name = $this->getNameFromContact($r);
+            if (\is_string($r['ADR'])) {
+                $r['ADR'] = [$r['ADR']];
+            }
 
-			$name = $this->getNameFromContact($r);
-			if (\is_string($r['ADR'])) {
-				$r['ADR'] = [$r['ADR']];
-			}
+            $photo = isset($r['PHOTO'])
+                ? $this->getPhotoUri($r['PHOTO'])
+                : null;
 
-			$photo = isset($r['PHOTO'])
-				? $this->getPhotoUri($r['PHOTO'])
-				: null;
+            $addresses = [];
+            foreach ($r['ADR'] as $address) {
+                $addresses[] = trim(preg_replace("/\n+/", "\n", str_replace(';', "\n", $address)));
+            }
 
-			$addresses = [];
-			foreach ($r['ADR'] as $address) {
-				$addresses[] = trim(preg_replace("/\n+/", "\n", str_replace(';', "\n", $address)));
-			}
+            $contacts[] = [
+                'name' => $name,
+                'addresses' => $addresses,
+                'photo' => $photo,
+            ];
+        }
 
-			$contacts[] = [
-				'name' => $name,
-				'addresses' => $addresses,
-				'photo' => $photo,
-			];
-		}
-
-		return new JSONResponse($contacts);
-	}
+        return new JSONResponse($contacts);
+    }
 
 
-	/**
-	 * Search for a contact based on a contact's name or email-address
-	 *
-	 * @param string $search Name or email to search for
-	 * @return JSONResponse
-	 *
-	 * @NoAdminRequired
-	 */
-	public function searchAttendee(string $search):JSONResponse {
-		if (!$this->contactsManager->isEnabled()) {
-			return new JSONResponse();
-		}
+    /**
+     * Search for a contact based on a contact's name or email-address
+     *
+     * @param string $search Name or email to search for
+     * @return JSONResponse
+     *
+     * @NoAdminRequired
+     */
+    public function searchAttendee(string $search): JSONResponse
+    {
+        if (!$this->contactsManager->isEnabled()) {
+            return new JSONResponse();
+        }
 
-		$result = $this->contactsManager->search($search, ['FN', 'EMAIL']);
+        $result = $this->contactsManager->search($search, ['FN', 'EMAIL']);
 
-		$contacts = [];
-		foreach ($result as $r) {
-			// Information about system users is fetched via DAV nowadays
-			if (isset($r['isLocalSystemBook']) && $r['isLocalSystemBook']) {
-				continue;
-			}
+        $contacts = [];
+        foreach ($result as $r) {
+            // Information about system users is fetched via DAV nowadays
+            if (isset($r['isLocalSystemBook']) && $r['isLocalSystemBook']) {
+                continue;
+            }
 
-			if (!isset($r['EMAIL'])) {
-				continue;
-			}
+            if (!isset($r['EMAIL'])) {
+                continue;
+            }
 
-			$name = $this->getNameFromContact($r);
-			if (\is_string($r['EMAIL'])) {
-				$r['EMAIL'] = [$r['EMAIL']];
-			}
+            $name = $this->getNameFromContact($r);
+            if (\is_string($r['EMAIL'])) {
+                $r['EMAIL'] = [$r['EMAIL']];
+            }
 
-			$photo = isset($r['PHOTO'])
-				? $this->getPhotoUri($r['PHOTO'])
-				: null;
+            $photo = isset($r['PHOTO'])
+                ? $this->getPhotoUri($r['PHOTO'])
+                : null;
 
-			$lang = null;
-			if (isset($r['LANG'])) {
-				if (\is_array($r['LANG'])) {
-					$lang = $r['LANG'][0];
-				} else {
-					$lang = $r['LANG'];
-				}
-			}
+            $lang = null;
+            if (isset($r['LANG'])) {
+                if (\is_array($r['LANG'])) {
+                    $lang = $r['LANG'][0];
+                } else {
+                    $lang = $r['LANG'];
+                }
+            }
 
-			$timezoneId = null;
-			if (isset($r['TZ'])) {
-				if (\is_array($r['TZ'])) {
-					$timezoneId = $r['TZ'][0];
-				} else {
-					$timezoneId = $r['TZ'];
-				}
-			}
+            $timezoneId = null;
+            if (isset($r['TZ'])) {
+                if (\is_array($r['TZ'])) {
+                    $timezoneId = $r['TZ'][0];
+                } else {
+                    $timezoneId = $r['TZ'];
+                }
+            }
 
-			$contacts[] = [
-				'name' => $name,
-				'emails' => $r['EMAIL'],
-				'lang' => $lang,
-				'tzid' => $timezoneId,
-				'photo' => $photo,
-			];
-		}
+            $contacts[] = [
+                'name' => $name,
+                'emails' => $r['EMAIL'],
+                'lang' => $lang,
+                'tzid' => $timezoneId,
+                'photo' => $photo,
+            ];
+        }
 
-		return new JSONResponse($contacts);
-	}
+        return new JSONResponse($contacts);
+    }
 
-	/**
-	 * Get a contact's photo based on their email-address
-	 *
-	 * @param string $search Exact email-address to match
-	 * @return JSONResponse
-	 *
-	 * @NoAdminRequired
-	 */
-	public function searchPhoto(string $search):JSONResponse {
-		if (!$this->contactsManager->isEnabled()) {
-			return new JSONResponse([], Http::STATUS_NOT_FOUND);
-		}
+    /**
+     * Get a contact's photo based on their email-address
+     *
+     * @param string $search Exact email-address to match
+     * @return JSONResponse
+     *
+     * @NoAdminRequired
+     */
+    public function searchPhoto(string $search): JSONResponse
+    {
+        if (!$this->contactsManager->isEnabled()) {
+            return new JSONResponse([], Http::STATUS_NOT_FOUND);
+        }
 
-		$result = $this->contactsManager->search($search, ['EMAIL']);
+        $result = $this->contactsManager->search($search, ['EMAIL']);
 
-		foreach ($result as $r) {
-			if (!isset($r['EMAIL'])) {
-				continue;
-			}
+        foreach ($result as $r) {
+            if (!isset($r['EMAIL'])) {
+                continue;
+            }
 
-			if (\is_string($r['EMAIL'])) {
-				$r['EMAIL'] = [$r['EMAIL']];
-			}
+            if (\is_string($r['EMAIL'])) {
+                $r['EMAIL'] = [$r['EMAIL']];
+            }
 
-			$match = false;
-			foreach ($r['EMAIL'] as $email) {
-				if ($email === $search) {
-					$match = true;
-				}
-			}
+            $match = false;
+            foreach ($r['EMAIL'] as $email) {
+                if ($email === $search) {
+                    $match = true;
+                }
+            }
 
-			if (!$match) {
-				continue;
-			}
+            if (!$match) {
+                continue;
+            }
 
-			if (!isset($r['PHOTO'])) {
-				continue;
-			}
+            if (!isset($r['PHOTO'])) {
+                continue;
+            }
 
-			$name = $this->getNameFromContact($r);
-			$photo = $this->getPhotoUri($r['PHOTO']);
-			if (!$photo) {
-				continue;
-			}
+            $name = $this->getNameFromContact($r);
+            $photo = $this->getPhotoUri($r['PHOTO']);
+            if (!$photo) {
+                continue;
+            }
 
-			return new JSONResponse([
-				'name' => $name,
-				'photo' => $photo,
-			]);
-		}
+            return new JSONResponse([
+                'name' => $name,
+                'photo' => $photo,
+            ]);
+        }
 
-		return new JSONResponse([], Http::STATUS_NOT_FOUND);
-	}
+        return new JSONResponse([], Http::STATUS_NOT_FOUND);
+    }
 
-	/**
-	 * Extract name from an array containing a contact's information
-	 *
-	 * @param array $r
-	 * @return string
-	 */
-	private function getNameFromContact(array $r):string {
-		return $r['FN'] ?? '';
-	}
+    /**
+     * Extract name from an array containing a contact's information
+     *
+     * @param array $r
+     * @return string
+     */
+    private function getNameFromContact(array $r): string
+    {
+        return $r['FN'] ?? '';
+    }
 
-	/**
-	 * Get photo uri from contact
-	 *
-	 * @param string $raw
-	 * @return string|null
-	 */
-	private function getPhotoUri(string $raw):?string {
-		$uriPrefix = 'VALUE=uri:';
-		if (substr($raw, 0, strlen($uriPrefix)) === $uriPrefix) {
-			return substr($raw, strpos($raw, 'http'));
-		}
+    /**
+     * Get photo uri from contact
+     *
+     * @param string $raw
+     * @return string|null
+     */
+    private function getPhotoUri(string $raw): ?string
+    {
+        $uriPrefix = 'VALUE=uri:';
+        if (substr($raw, 0, strlen($uriPrefix)) === $uriPrefix) {
+            return substr($raw, strpos($raw, 'http'));
+        }
 
-		return null;
-	}
+        return null;
+    }
 }
