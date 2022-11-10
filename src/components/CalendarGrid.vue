@@ -23,11 +23,7 @@
 
 <template>
 	<FullCalendar ref="fullCalendar"
-		:options="options">
-		<template #eventContent="arg">
-			<EventRender :event-details="arg" />
-		</template>
-	</FullCalendar>
+		:options="options" />
 </template>
 
 <script>
@@ -60,7 +56,6 @@ import dayHeaderDidMount from '../fullcalendar/rendering/dayHeaderDidMount.js'
 import eventDidMount from '../fullcalendar/rendering/eventDidMount.js'
 import eventOrder from '../fullcalendar/rendering/eventOrder.js'
 import noEventsDidMount from '../fullcalendar/rendering/noEventsDidMount.js'
-import EventRender from './EventRender.vue'
 
 // Import timezone plugins
 import VTimezoneNamedTimezone from '../fullcalendar/timezones/vtimezoneNamedTimezoneImpl.js'
@@ -76,7 +71,6 @@ export default {
 	name: 'CalendarGrid',
 	components: {
 		FullCalendar,
-		EventRender,
 	},
 	props: {
 		/**
@@ -136,7 +130,8 @@ export default {
 				dayHeaderDidMount,
 				eventDidMount,
 				noEventsDidMount,
-				eventOrder: ['start', '-duration', 'allDay', eventOrder],
+				// FIXME: remove title if upstream is fixed (https://github.com/fullcalendar/fullcalendar/issues/6608#issuecomment-954241059)
+				eventOrder: ['title', 'start', '-duration', 'allDay', eventOrder],
 				forceEventDuration: false,
 				headerToolbar: false,
 				height: '100%',
