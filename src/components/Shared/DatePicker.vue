@@ -426,12 +426,13 @@ export default {
 		padding: 1rem !important;
 		border: none !important;
 		display: flex;
-	    justify-content: space-around;
+	    justify-content: center;
 
 		.mx-btn.mx-datepicker-btn-confirm {
 			color: white;
 			border: none;
 			background-color: var(--adminly-blue);
+			margin-left: 1rem;
 		}
 
 		.mx-btn {
@@ -457,6 +458,7 @@ export default {
 
 	.mx-time-item:hover {
 		border-radius: var(--adminly-border-radius-button);
+		background-color: var(--adminly-magenta) !important;
 	}
 
 	.mx-scrollbar,
